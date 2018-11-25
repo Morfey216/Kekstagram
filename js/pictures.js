@@ -17,3 +17,20 @@ var descriptionsSamples = [
   'Цените каждое мгновенье. Цените тех, кто рядом с вами и отгоняйте все сомненья. Не обижайте всех словами......',
   'Вот это тачка!'
 ];
+
+var usersPictures = [
+  {
+    url: '',
+    likes: 0,
+    comments: [],
+    description: ''
+  }
+];
+
+for (var i = 0; i < 25; i++) {
+  usersPictures[i] = {};
+  usersPictures[i].url = 'photos/' + (i + 1) + '.jpg';
+  usersPictures[i].likes = i;
+  usersPictures[i].comments = commentsSamples[3];
+  usersPictures[i].description = descriptionsSamples[1];
+}
