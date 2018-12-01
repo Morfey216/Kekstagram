@@ -75,6 +75,7 @@ for (var i = 0; i < PICTURES_NUMBER; i++) {
   usersPicture[i] = createUserPicture({}, i);
 }
 
+// Создание и отрисовка изображений пользователей
 
 var userPictureDialog = document.querySelector('.pictures');
 var userBigPictureDialog = document.querySelector('.big-picture');
@@ -97,3 +98,11 @@ for (var index = 0; index < usersPicture.length; index++) {
 }
 
 userPictureDialog.appendChild(fragment);
+
+// Комментируем большую фотографию
+
+userBigPictureDialog.classList.remove('hidden');
+userBigPictureDialog.querySelector('.big-picture__img img').src = usersPicture[0].url;
+userBigPictureDialog.querySelector('.social__caption').textContent = usersPicture[0].description;
+userBigPictureDialog.querySelector('.likes-count').textContent = usersPicture[0].likes;
+userBigPictureDialog.querySelector('.comments-count').textContent = usersPicture[0].comments.length;
