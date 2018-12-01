@@ -74,3 +74,26 @@ var createUserPicture = function (picture, n) {
 for (var i = 0; i < PICTURES_NUMBER; i++) {
   usersPicture[i] = createUserPicture({}, i);
 }
+
+
+var userPictureDialog = document.querySelector('.pictures');
+var userBigPictureDialog = document.querySelector('.big-picture');
+
+var usersPictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+
+var renderPicture = function (picture) {
+  var pictureElement = usersPictureTemplate.cloneNode(true);
+
+  pictureElement.querySelector('.picture__img').src = picture.url;
+  pictureElement.querySelector('.picture__likes').textContent = picture.likes;
+  pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
+
+  return pictureElement;
+};
+
+var fragment = document.createDocumentFragment();
+for (var index = 0; index < usersPicture.length; index++) {
+  fragment.appendChild(renderPicture(usersPicture[index]));
+}
+
+userPictureDialog.appendChild(fragment);
