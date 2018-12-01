@@ -4,8 +4,11 @@ var MIN_LIKE = 15;
 var MAX_LIKE = 200;
 var MIN_COMMENT = 1;
 var MAX_COMMENT = 12;
+var MAX_NUMBER_AVATAR = 6;
+var MIN_NUMBER_AVATAR = 1;
+var PICTURES_NUMBER = 25;
 
-var commentsSamples = [
+var COMMENT_SAMPLES = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
@@ -14,7 +17,7 @@ var commentsSamples = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-var descriptionsSamples = [
+var DESCRIPTION_SAMPLES = [
   'Тестим новую камеру!',
   'Затусили с друзьями на море',
   'Как же круто тут кормят',
@@ -23,27 +26,51 @@ var descriptionsSamples = [
   'Вот это тачка!'
 ];
 
-var usersPictures = [];
+var NAME_SAMPLES = [
+  'Иван',
+  'Себастьян',
+  'Мария',
+  'Кристоф',
+  'Виктор',
+  'Юлия',
+  'Люпита',
+  'Вашингтон'
+];
+
+var usersPicture = [];
 
 var getIndex = function (maxIndex, minIndex) {
   return Math.floor(Math.random() * (maxIndex - minIndex)) + minIndex;
 };
 
-var createComments = function () {
+var createComment = function (comment) {
+  comment.avatar = 'img/avatar-' + [getIndex(MAX_NUMBER_AVATAR + 1, MIN_NUMBER_AVATAR)] + '.svg';
+  comment.message = COMMENT_SAMPLES[getIndex(COMMENT_SAMPLES.length, 0)];
+  comment.name = NAME_SAMPLES[getIndex(NAME_SAMPLES.length, 0)];
+
+  return comment;
+};
+
+var createCommentsKit = function () {
   var commentsKit = [];
   var commentQuantity = getIndex(MAX_COMMENT, MIN_COMMENT);
 
   for (var index = 0; index <= commentQuantity; index++) {
-    commentsKit[index] = commentsSamples[getIndex(commentsSamples.length, 0)];
+    commentsKit[index] = createComment({});
   }
 
   return commentsKit;
 };
 
-for (var i = 0; i < 25; i++) {
-  usersPictures[i] = {};
-  usersPictures[i].url = 'photos/' + (i + 1) + '.jpg';
-  usersPictures[i].likes = getIndex(MAX_LIKE + 1, MIN_LIKE);
-  usersPictures[i].comments = createComments();
-  usersPictures[i].description = descriptionsSamples[getIndex(descriptionsSamples.length, 0)];
+var createUserPicture = function (picture, n) {
+  picture.url = 'photos/' + (n + 1) + '.jpg';
+  picture.likes = getIndex(MAX_LIKE + 1, MIN_LIKE);
+  picture.comments = createCommentsKit();
+  picture.description = DESCRIPTION_SAMPLES[getIndex(DESCRIPTION_SAMPLES.length, 0)];
+
+  return picture;
+};
+
+for (var i = 0; i < PICTURES_NUMBER; i++) {
+  usersPicture[i] = createUserPicture({}, i);
 }
