@@ -101,8 +101,42 @@ userPictureDialog.appendChild(fragment);
 
 // Комментируем большую фотографию
 
+var numberPicture = 0;
+
+userBigPictureDialog.querySelector('.big-picture__img img').src = usersPicture[numberPicture].url;
+userBigPictureDialog.querySelector('.social__caption').textContent = usersPicture[numberPicture].description;
+userBigPictureDialog.querySelector('.likes-count').textContent = usersPicture[numberPicture].likes;
+userBigPictureDialog.querySelector('.comments-count').textContent = usersPicture[numberPicture].comments.length;
+
+
+var socialComments = userBigPictureDialog.querySelector('.social__comments');
+
+var clearComments = function () {
+  while (socialComments.firstChild) {
+      socialComments.removeChild(socialComments.firstChild);
+  }
+};
+
+var renderComment = function (commentData) {
+  var newComment = document.createElement('li');
+  newComment.className = 'social__comment';
+  newComment.innerHTML = '<img class="social__picture" src="' + commentData.avatar + '" alt="Аватар комментатора фотографии" width="35" height="35">' + commentData.message + '<p class="social__text"></p>';
+
+  return newComment;
+};
+
+var renderNewComments = function () {
+  clearComments();
+  var commentFragment = document.createDocumentFragment();
+  var commentNumber = 3;
+  for (var index = 0; index < commentNumber; index++) {
+    commentFragment.appendChild(renderComment(usersPicture[numberPicture].comments[index]));
+  }
+  socialComments.appendChild(commentFragment);
+};
+
+renderNewComments();
+
 userBigPictureDialog.classList.remove('hidden');
-userBigPictureDialog.querySelector('.big-picture__img img').src = usersPicture[0].url;
-userBigPictureDialog.querySelector('.social__caption').textContent = usersPicture[0].description;
-userBigPictureDialog.querySelector('.likes-count').textContent = usersPicture[0].likes;
-userBigPictureDialog.querySelector('.comments-count').textContent = usersPicture[0].comments.length;
+// userBigPictureDialog.querySelector('.social__comment-count').classList.add('visually-hidden');
+userBigPictureDialog.querySelector('.comments-loader').classList.add('visually-hidden');
