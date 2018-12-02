@@ -113,17 +113,26 @@ drawBigPicture(numberBigPicture);
 function drawBigPicture(numberPicture) {
   var userBigPictureDialog = document.querySelector('.big-picture');
 
-  userBigPictureDialog.querySelector('.big-picture__img img').src = usersPicture[numberPicture].url;
-  userBigPictureDialog.querySelector('.social__caption').textContent = usersPicture[numberPicture].description;
-  userBigPictureDialog.querySelector('.likes-count').textContent = usersPicture[numberPicture].likes;
-  userBigPictureDialog.querySelector('.comments-count').textContent = usersPicture[numberPicture].comments.length;
+  renderGeneralInformation();
   renderNewComments();
+  showBigPicture();
+
+  function renderGeneralInformation() {
+    userBigPictureDialog.querySelector('.big-picture__img img').src = usersPicture[numberPicture].url;
+    userBigPictureDialog.querySelector('.social__caption').textContent = usersPicture[numberPicture].description;
+    userBigPictureDialog.querySelector('.likes-count').textContent = usersPicture[numberPicture].likes;
+    userBigPictureDialog.querySelector('.comments-count').textContent = usersPicture[numberPicture].comments.length;
+  }
 
   function renderNewComments() {
     var socialComments = userBigPictureDialog.querySelector('.social__comments');
     var commentFragment = document.createDocumentFragment();
     var startIndexOfComment = 0;
-    var endIndexOfComment = getEndIndexOfComment(startIndexOfComment + COMMENTS_INTERVAL);
+    var endIndexOfComment = startIndexOfComment + COMMENTS_INTERVAL;
+
+    if (endIndexOfComment > usersPicture[numberPicture].comments.length) {
+      endIndexOfComment = usersPicture[numberPicture].comments.length;
+    }
 
     clearComments();
 
@@ -164,13 +173,11 @@ function drawBigPicture(numberPicture) {
         socialComments.removeChild(socialComments.firstChild);
       }
     }
-
-    function getEndIndexOfComment(numberEndIndex) {
-      return (numberEndIndex > usersPicture[numberPicture].comments.length) ? usersPicture[numberPicture].comments.length : numberEndIndex;
-    }
   }
 
-  userBigPictureDialog.classList.remove('hidden');
-  userBigPictureDialog.querySelector('.social__comment-count').classList.add('visually-hidden');
-  userBigPictureDialog.querySelector('.comments-loader').classList.add('visually-hidden');
+  function showBigPicture() {
+    userBigPictureDialog.classList.remove('hidden');
+    userBigPictureDialog.querySelector('.social__comment-count').classList.add('visually-hidden');
+    userBigPictureDialog.querySelector('.comments-loader').classList.add('visually-hidden');
+  }
 }
