@@ -78,7 +78,6 @@ for (var i = 0; i < PICTURES_NUMBER; i++) {
 // Создание и отрисовка изображений пользователей
 
 var userPictureDialog = document.querySelector('.pictures');
-var userBigPictureDialog = document.querySelector('.big-picture');
 
 var usersPictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
@@ -101,19 +100,12 @@ userPictureDialog.appendChild(fragment);
 
 // Комментируем большую фотографию
 
-var numberPicture = 0;
-
-userBigPictureDialog.querySelector('.big-picture__img img').src = usersPicture[numberPicture].url;
-userBigPictureDialog.querySelector('.social__caption').textContent = usersPicture[numberPicture].description;
-userBigPictureDialog.querySelector('.likes-count').textContent = usersPicture[numberPicture].likes;
-userBigPictureDialog.querySelector('.comments-count').textContent = usersPicture[numberPicture].comments.length;
-
-
+var userBigPictureDialog = document.querySelector('.big-picture');
 var socialComments = userBigPictureDialog.querySelector('.social__comments');
 
 var clearComments = function () {
   while (socialComments.firstChild) {
-      socialComments.removeChild(socialComments.firstChild);
+    socialComments.removeChild(socialComments.firstChild);
   }
 };
 
@@ -129,14 +121,25 @@ var renderNewComments = function () {
   clearComments();
   var commentFragment = document.createDocumentFragment();
   var commentNumber = 3;
-  for (var index = 0; index < commentNumber; index++) {
-    commentFragment.appendChild(renderComment(usersPicture[numberPicture].comments[index]));
+
+  for (var indexComment = 0; indexComment < commentNumber; indexComment++) {
+    commentFragment.appendChild(renderComment(usersPicture[numberPicture].comments[indexComment]));
   }
+
   socialComments.appendChild(commentFragment);
 };
 
-renderNewComments();
+var renderBigPicture = function (numberPicture) {
+  userBigPictureDialog.querySelector('.big-picture__img img').src = usersPicture[numberPicture].url;
+  userBigPictureDialog.querySelector('.social__caption').textContent = usersPicture[numberPicture].description;
+  userBigPictureDialog.querySelector('.likes-count').textContent = usersPicture[numberPicture].likes;
+  userBigPictureDialog.querySelector('.comments-count').textContent = usersPicture[numberPicture].comments.length;
+  renderNewComments();
+};
 
+var numberPicture = 19;
+renderBigPicture(numberPicture);
 userBigPictureDialog.classList.remove('hidden');
+
 // userBigPictureDialog.querySelector('.social__comment-count').classList.add('visually-hidden');
 userBigPictureDialog.querySelector('.comments-loader').classList.add('visually-hidden');
