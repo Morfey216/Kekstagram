@@ -105,10 +105,22 @@ function drawPictures(picturesKit) {
   userPictureDialog.appendChild(fragment);
 }
 
+// Добавление обработчиков
+
+// Загрузка изображения пользователя
+
+var imageUploadForm = document.querySelector('.img-upload__form');
+var nameOfUploadFile = imageUploadForm.querySelector('#upload-file');
+var userFileEditor = imageUploadForm.querySelector('.img-upload__overlay');
+
+nameOfUploadFile.addEventListener('change', function () {
+  userFileEditor.classList.remove('hidden');
+});
+
 // Открываем большую фотографию
 
-var numberBigPicture = 0;
-drawBigPicture(numberBigPicture);
+// var numberBigPicture = 0;
+// drawBigPicture(numberBigPicture);
 
 function drawBigPicture(numberPicture) {
   var userBigPictureDialog = document.querySelector('.big-picture');
