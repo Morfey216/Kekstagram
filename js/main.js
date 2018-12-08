@@ -38,6 +38,9 @@ var NAME_SAMPLES = [
   'Вашингтон'
 ];
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 var usersPicture = getAllPicture();
 drawPictures(usersPicture);
 
@@ -112,10 +115,35 @@ function drawPictures(picturesKit) {
 var imageUploadForm = document.querySelector('.img-upload__form');
 var nameOfUploadFile = imageUploadForm.querySelector('#upload-file');
 var userFileEditor = imageUploadForm.querySelector('.img-upload__overlay');
+var userFileEditorClose = userFileEditor.querySelector('.img-upload__cancel');
 
 nameOfUploadFile.addEventListener('change', function () {
   userFileEditor.classList.remove('hidden');
+
+  document.addEventListener('keydown', onFileEditorEscPress);
 });
+
+function onFileEditorEscPress(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeFileEditor();
+  }
+}
+
+userFileEditorClose.addEventListener('click', function () {
+  closeFileEditor();
+});
+
+userFileEditorClose.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closeFileEditor();
+  }
+});
+
+function closeFileEditor() {
+  userFileEditor.classList.add('hidden');
+  nameOfUploadFile.value = '';
+  document.removeEventListener('keydown', onFileEditorEscPress);
+}
 
 // Открываем большую фотографию
 
