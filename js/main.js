@@ -92,15 +92,16 @@ function drawPictures(picturesKit) {
   var userPictureDialog = document.querySelector('.pictures');
 
   for (var index = 0; index < picturesKit.length; index++) {
-    fragment.appendChild(renderPicture(picturesKit[index]));
+    fragment.appendChild(renderPicture(picturesKit[index], index));
   }
 
-  function renderPicture(picture) {
+  function renderPicture(picture, indexPicture) {
     var pictureElement = usersPictureTemplate.cloneNode(true);
 
     pictureElement.querySelector('.picture__img').src = picture.url;
     pictureElement.querySelector('.picture__likes').textContent = picture.likes;
     pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
+    pictureElement.setAttribute('data-picture-position', indexPicture);
 
     return pictureElement;
   }
@@ -123,12 +124,6 @@ nameOfUploadFile.addEventListener('change', function () {
   document.addEventListener('keydown', onFileEditorEscPress);
 });
 
-function onFileEditorEscPress(evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    closeFileEditor();
-  }
-}
-
 userFileEditorClose.addEventListener('click', function () {
   closeFileEditor();
 });
@@ -139,6 +134,12 @@ userFileEditorClose.addEventListener('keydown', function (evt) {
   }
 });
 
+function onFileEditorEscPress(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeFileEditor();
+  }
+}
+
 function closeFileEditor() {
   userFileEditor.classList.add('hidden');
   nameOfUploadFile.value = '';
@@ -146,6 +147,14 @@ function closeFileEditor() {
 }
 
 // Открываем большую фотографию
+
+var allSmallPictures = document.querySelectorAll('.picture');
+
+for (var numberSmallPicture = 0; numberSmallPicture < allSmallPictures.length; numberSmallPicture++) {
+  allSmallPictures[numberSmallPicture].addEventListener('click', function (evt) {
+    drawBigPicture(evt.target.parentElement.getAttribute('data-picture-position'));
+  });
+}
 
 // var numberBigPicture = 0;
 // drawBigPicture(numberBigPicture);
@@ -216,8 +225,32 @@ function drawBigPicture(numberPicture) {
   }
 
   function showBigPicture() {
+    var userBigPictureClose = userBigPictureDialog.querySelector('.big-picture__cancel');
+
     userBigPictureDialog.classList.remove('hidden');
     userBigPictureDialog.querySelector('.social__comment-count').classList.add('visually-hidden');
     userBigPictureDialog.querySelector('.comments-loader').classList.add('visually-hidden');
+    document.addEventListener('keydown', onBigPictureEscPress);
+
+    userBigPictureClose.addEventListener('click', function () {
+      closeBigPicture();
+    });
+
+    userBigPictureClose.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        closeBigPicture();
+      }
+    });
+
+    function onBigPictureEscPress(evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        closeBigPicture();
+      }
+    }
+
+    function closeBigPicture() {
+      userBigPictureDialog.classList.add('hidden');
+      document.removeEventListener('keydown', onBigPictureEscPress);
+    }
   }
 }
