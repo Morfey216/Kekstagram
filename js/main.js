@@ -117,6 +117,8 @@ var imageUploadForm = document.querySelector('.img-upload__form');
 var nameOfUploadFile = imageUploadForm.querySelector('#upload-file');
 var userFileEditor = imageUploadForm.querySelector('.img-upload__overlay');
 var userFileEditorClose = userFileEditor.querySelector('.img-upload__cancel');
+var hashtagsInput = userFileEditor.querySelector('.text__hashtags');
+var descriptionInput = userFileEditor.querySelector('.text__description');
 
 nameOfUploadFile.addEventListener('change', function () {
   userFileEditor.classList.remove('hidden');
@@ -135,7 +137,7 @@ userFileEditorClose.addEventListener('keydown', function (evt) {
 });
 
 function onFileEditorEscPress(evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
+  if (evt.keyCode === ESC_KEYCODE && document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
     closeFileEditor();
   }
 }
