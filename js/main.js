@@ -120,11 +120,60 @@ var userFileEditorClose = userFileEditor.querySelector('.img-upload__cancel');
 var hashtagsInput = userFileEditor.querySelector('.text__hashtags');
 var descriptionInput = userFileEditor.querySelector('.text__description');
 
+var effectLevelLine = userFileEditor.querySelector('.effect-level__line');
+var effectLevelPin = userFileEditor.querySelector('.effect-level__pin');
+var effectLevelDepth = userFileEditor.querySelector('.effect-level__depth');
+// var effectsName = userFileEditor.querySelectorAll('.effects__radio');
+// var currentEffect = 'none';
+
 nameOfUploadFile.addEventListener('change', function () {
   userFileEditor.classList.remove('hidden');
 
   document.addEventListener('keydown', onFileEditorEscPress);
+  effectLevelPin.addEventListener('mousedown', onMouseDown);
 });
+
+function onMouseDown(downEvt) {
+  downEvt.preventDefault();
+
+  var effectLevelLineCoords = getCoords(effectLevelLine);
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+
+  function onMouseMove(moveEvt) {
+    var newLeft = moveEvt.clientX - effectLevelLineCoords.left;
+    var maxLeft = effectLevelLine.offsetWidth;
+
+    if (newLeft < 0) {
+      newLeft = 0;
+    }
+
+    if (newLeft > maxLeft) {
+      newLeft = maxLeft;
+    }
+
+    effectLevelPin.style.left = newLeft + 'px';
+    effectLevelDepth.style.width = newLeft + 'px';
+  }
+
+  function onMouseUp(upEvt) {
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  }
+}
+
+effectLevelPin.ondragstart = function () {
+  return false;
+};
+
+function getCoords(element) {
+  var box = element.getBoundingClientRect();
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+}
 
 userFileEditorClose.addEventListener('click', function () {
   closeFileEditor();
