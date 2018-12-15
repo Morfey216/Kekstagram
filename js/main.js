@@ -123,6 +123,8 @@ var descriptionInput = userFileEditor.querySelector('.text__description');
 var effectLevelLine = userFileEditor.querySelector('.effect-level__line');
 var effectLevelPin = userFileEditor.querySelector('.effect-level__pin');
 var effectLevelDepth = userFileEditor.querySelector('.effect-level__depth');
+var effectLevelValue = userFileEditor.querySelector('.effect-level__value');
+var effectValue = effectLevelValue.value;
 // var effectsName = userFileEditor.querySelectorAll('.effects__radio');
 // var currentEffect = 'none';
 
@@ -155,11 +157,13 @@ function onMouseDown(downEvt) {
 
     effectLevelPin.style.left = newLeft + 'px';
     effectLevelDepth.style.width = newLeft + 'px';
+    effectValue = newLeft * 100 / maxLeft;
   }
 
   function onMouseUp(upEvt) {
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
+    effectLevelValue.setAttribute('value', effectValue);
   }
 }
 
