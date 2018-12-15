@@ -120,19 +120,20 @@ var userFileEditorClose = userFileEditor.querySelector('.img-upload__cancel');
 var hashtagsInput = userFileEditor.querySelector('.text__hashtags');
 var descriptionInput = userFileEditor.querySelector('.text__description');
 
+var choiceEffect = userFileEditor.querySelector('.effects__list');
 var effectLevelLine = userFileEditor.querySelector('.effect-level__line');
 var effectLevelPin = userFileEditor.querySelector('.effect-level__pin');
 var effectLevelDepth = userFileEditor.querySelector('.effect-level__depth');
 var effectLevelValue = userFileEditor.querySelector('.effect-level__value');
 var effectValue = effectLevelValue.value;
-// var effectsName = userFileEditor.querySelectorAll('.effects__radio');
-// var currentEffect = 'none';
+var currentEffect = 'none';
 
 nameOfUploadFile.addEventListener('change', function () {
   userFileEditor.classList.remove('hidden');
 
   document.addEventListener('keydown', onFileEditorEscPress);
   effectLevelPin.addEventListener('mousedown', onMouseDown);
+  choiceEffect.addEventListener('focus', onChoiceEffect, true);
 });
 
 function onMouseDown(downEvt) {
@@ -177,6 +178,10 @@ function getCoords(element) {
     top: box.top + pageYOffset,
     left: box.left + pageXOffset
   };
+}
+
+function onChoiceEffect(choiceEvt) {
+  currentEffect = choiceEvt.target.value;
 }
 
 userFileEditorClose.addEventListener('click', function () {
