@@ -174,11 +174,34 @@ nameOfUploadFile.addEventListener('change', function () {
   effectLevel.classList.add('hidden');
 
   document.addEventListener('keydown', onFileEditorEscPress);
-  effectLevelPin.addEventListener('mousedown', onMouseDown);
+  effectLevelPin.addEventListener('mousedown', onMouseDownLevelPin);
   choiceEffect.addEventListener('focus', onChoiceEffect, true);
 });
 
-function onMouseDown(downEvt) {
+userFileEditorClose.addEventListener('click', function () {
+  closeFileEditor();
+});
+
+userFileEditorClose.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closeFileEditor();
+  }
+});
+
+function onFileEditorEscPress(evt) {
+  if (evt.keyCode === ESC_KEYCODE && document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
+    closeFileEditor();
+  }
+}
+
+function closeFileEditor() {
+  userFileEditor.classList.add('hidden');
+  nameOfUploadFile.value = '';
+  clearEffect();
+  document.removeEventListener('keydown', onFileEditorEscPress);
+}
+
+function onMouseDownLevelPin(downEvt) {
   downEvt.preventDefault();
 
   var effectLevelLineCoords = getCoords(effectLevelLine);
@@ -267,29 +290,6 @@ function setEffect(effect) {
   var effectDepth = (effectRange / 100) * effectValue + EFFECTS_KIT[effectIndex].minLevelEffect;
 
   imagePreview.style.filter = EFFECTS_KIT[effectIndex].effectFilter + '(' + effectDepth + EFFECTS_KIT[effectIndex].effectDimension + ')';
-}
-
-userFileEditorClose.addEventListener('click', function () {
-  closeFileEditor();
-});
-
-userFileEditorClose.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    closeFileEditor();
-  }
-});
-
-function onFileEditorEscPress(evt) {
-  if (evt.keyCode === ESC_KEYCODE && document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
-    closeFileEditor();
-  }
-}
-
-function closeFileEditor() {
-  userFileEditor.classList.add('hidden');
-  nameOfUploadFile.value = '';
-  clearEffect();
-  document.removeEventListener('keydown', onFileEditorEscPress);
 }
 
 // Открываем большую фотографию
