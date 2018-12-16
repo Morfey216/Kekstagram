@@ -38,6 +38,44 @@ var NAME_SAMPLES = [
   'Вашингтон'
 ];
 
+var EFFECTS_KIT = [
+  {
+    effectName: 'chrome',
+    effectFilter: 'grayscale',
+    minLevelEffect: 0,
+    maxLevelEffect: 1,
+    effectDimension: ''
+  },
+  {
+    effectName: 'sepia',
+    effectFilter: 'sepia',
+    minLevelEffect: 0,
+    maxLevelEffect: 1,
+    effectDimension: ''
+  },
+  {
+    effectName: 'marvin',
+    effectFilter: 'invert',
+    minLevelEffect: 0,
+    maxLevelEffect: 100,
+    effectDimension: '%'
+  },
+  {
+    effectName: 'phobos',
+    effectFilter: 'blur',
+    minLevelEffect: 0,
+    maxLevelEffect: 3,
+    effectDimension: 'px'
+  },
+  {
+    effectName: 'heat',
+    effectFilter: 'brightness',
+    minLevelEffect: 1,
+    maxLevelEffect: 3,
+    effectDimension: ''
+  }
+];
+
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
@@ -117,19 +155,23 @@ var imageUploadForm = document.querySelector('.img-upload__form');
 var nameOfUploadFile = imageUploadForm.querySelector('#upload-file');
 var userFileEditor = imageUploadForm.querySelector('.img-upload__overlay');
 var userFileEditorClose = userFileEditor.querySelector('.img-upload__cancel');
+var imagePreview = userFileEditor.querySelector('.img-upload__preview');
 var hashtagsInput = userFileEditor.querySelector('.text__hashtags');
 var descriptionInput = userFileEditor.querySelector('.text__description');
 
-var choiceEffect = userFileEditor.querySelector('.effects__list');
-var effectLevelLine = userFileEditor.querySelector('.effect-level__line');
-var effectLevelPin = userFileEditor.querySelector('.effect-level__pin');
-var effectLevelDepth = userFileEditor.querySelector('.effect-level__depth');
-var effectLevelValue = userFileEditor.querySelector('.effect-level__value');
+var effectLevel = userFileEditor.querySelector('.effect-level');
+var effectLevelLine = effectLevel.querySelector('.effect-level__line');
+var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
+var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
+var effectLevelValue = effectLevel.querySelector('.effect-level__value');
 var effectValue = effectLevelValue.value;
+var choiceEffect = userFileEditor.querySelector('.effects__list');
 var currentEffect = 'none';
+var currentEffectClass = 'effects__preview--' + currentEffect;
 
 nameOfUploadFile.addEventListener('change', function () {
   userFileEditor.classList.remove('hidden');
+  effectLevel.classList.add('hidden');
 
   document.addEventListener('keydown', onFileEditorEscPress);
   effectLevelPin.addEventListener('mousedown', onMouseDown);
@@ -161,10 +203,11 @@ function onMouseDown(downEvt) {
     effectValue = newLeft * 100 / maxLeft;
   }
 
-  function onMouseUp(upEvt) {
+  function onMouseUp() {
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
     effectLevelValue.setAttribute('value', effectValue);
+    setEffect(currentEffect);
   }
 }
 
@@ -181,7 +224,49 @@ function getCoords(element) {
 }
 
 function onChoiceEffect(choiceEvt) {
+  imagePreview.classList.remove(currentEffectClass);
+  setDefautEffect();
   currentEffect = choiceEvt.target.value;
+
+  if (currentEffect === 'none') {
+    effectLevel.classList.add('hidden');
+    imagePreview.style.filter = '';
+  } else {
+    effectLevel.classList.remove('hidden');
+    setDefautEffect();
+    setEffect(currentEffect);
+  }
+
+  currentEffectClass = 'effects__preview--' + currentEffect;
+  imagePreview.classList.add(currentEffectClass);
+}
+
+function clearEffect() {
+  imagePreview.style.filter = '';
+  effectLevelValue.removeAttribute('value');
+  currentEffect = 'none';
+  imagePreview.classList.remove(currentEffectClass);
+}
+
+function setDefautEffect() {
+  var pinPosition = effectLevelLine.offsetWidth;
+  effectLevelValue.setAttribute('value', 100);
+  effectValue = 100;
+  effectLevelPin.style.left = pinPosition + 'px';
+  effectLevelDepth.style.width = pinPosition + 'px';
+}
+
+function setEffect(effect) {
+  var effectIndex = 0;
+
+  while (EFFECTS_KIT[effectIndex].effectName !== effect) {
+    effectIndex++;
+  }
+
+  var effectRange = EFFECTS_KIT[effectIndex].maxLevelEffect - EFFECTS_KIT[effectIndex].minLevelEffect;
+  var effectDepth = (effectRange / 100) * effectValue + EFFECTS_KIT[effectIndex].minLevelEffect;
+
+  imagePreview.style.filter = EFFECTS_KIT[effectIndex].effectFilter + '(' + effectDepth + EFFECTS_KIT[effectIndex].effectDimension + ')';
 }
 
 userFileEditorClose.addEventListener('click', function () {
@@ -203,6 +288,7 @@ function onFileEditorEscPress(evt) {
 function closeFileEditor() {
   userFileEditor.classList.add('hidden');
   nameOfUploadFile.value = '';
+  clearEffect();
   document.removeEventListener('keydown', onFileEditorEscPress);
 }
 
