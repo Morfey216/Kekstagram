@@ -168,6 +168,7 @@ var effectValue = effectLevelValue.value;
 var choiceEffect = userFileEditor.querySelector('.effects__list');
 var currentEffect = 'none';
 var currentEffectClass = 'effects__preview--' + currentEffect;
+var MAX_EFFECT_VALUE = 100;
 
 nameOfUploadFile.addEventListener('change', function () {
   userFileEditor.classList.remove('hidden');
@@ -248,11 +249,11 @@ function getCoords(element) {
 
 function onChoiceEffect(choiceEvt) {
   imagePreview.classList.remove(currentEffectClass);
-  setDefautEffect();
   currentEffect = choiceEvt.target.value;
 
   if (currentEffect === 'none') {
     effectLevel.classList.add('hidden');
+    setDefautEffect();
     imagePreview.style.filter = '';
   } else {
     effectLevel.classList.remove('hidden');
@@ -273,8 +274,8 @@ function clearEffect() {
 
 function setDefautEffect() {
   var pinPosition = effectLevelLine.offsetWidth;
-  effectLevelValue.setAttribute('value', 100);
-  effectValue = 100;
+  effectLevelValue.setAttribute('value', MAX_EFFECT_VALUE);
+  effectValue = MAX_EFFECT_VALUE;
   effectLevelPin.style.left = pinPosition + 'px';
   effectLevelDepth.style.width = pinPosition + 'px';
 }
