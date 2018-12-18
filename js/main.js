@@ -173,7 +173,7 @@ var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
 var effectLevelValue = effectLevel.querySelector('.effect-level__value');
 var effectValue = effectLevelValue.value;
 var choiceEffect = userFileEditor.querySelector('.effects__list');
-var currentEffectObj = 'none';
+var currentEffectObj = EFFECTS_KIT['none'];
 var MAX_EFFECT_VALUE = 100;
 
 nameOfUploadFile.addEventListener('change', function () {
