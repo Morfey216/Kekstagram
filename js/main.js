@@ -278,6 +278,8 @@ function setEffect(effect) {
     effectLevelValue.setAttribute('value', MAX_EFFECT_VALUE);
     effectValue = MAX_EFFECT_VALUE;
     imagePreview.style.filter = currentEffectObj.effectFilter + '(' + currentEffectObj.maxLevelEffect + currentEffectObj.effectDimension + ')';
+    effectLevelPin.style.left = effectLevelLine.offsetWidth + 'px';
+    effectLevelDepth.style.width = effectLevelLine.offsetWidth + 'px';
   }
 }
 
@@ -285,8 +287,8 @@ function clearEffect() {
   imagePreview.classList.remove('effects__preview--' + currentEffectObj.effectName);
   imagePreview.style.filter = '';
   effectLevelValue.removeAttribute('value');
-  effectLevelPin.style.left = effectLevelLine.offsetWidth + 'px';
-  effectLevelDepth.style.width = effectLevelLine.offsetWidth + 'px';
+  effectLevelPin.style.left = '';
+  effectLevelDepth.style.width = '';
 }
 
 // Открываем большую фотографию
