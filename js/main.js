@@ -167,6 +167,13 @@ var hashtagsInput = userFileEditor.querySelector('.text__hashtags');
 var descriptionInput = userFileEditor.querySelector('.text__description');
 
 var effectLevel = userFileEditor.querySelector('.effect-level');
+var scaleValueIndicator = userFileEditor.querySelector('.scale__control--value');
+var scaleControlSmaller = userFileEditor.querySelector('.scale__control--smaller');
+var scaleControlBigger = userFileEditor.querySelector('.scale__control--bigger');
+var MIN_SCALE_VALUE = 25;
+var MAX_SCALE_VALUE = 100;
+var SCALE_VALUE_STEP = 25;
+var scaleValue = MAX_SCALE_VALUE;
 var effectLevelLine = effectLevel.querySelector('.effect-level__line');
 var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
 var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
@@ -179,8 +186,29 @@ var MAX_EFFECT_VALUE = 100;
 nameOfUploadFile.addEventListener('change', function () {
   userFileEditor.classList.remove('hidden');
   effectLevel.classList.add('img-filters--inactive');
+  setScaleValue(scaleValue);
 
   document.addEventListener('keydown', onFileEditorEscPress);
+});
+
+scaleControlSmaller.addEventListener('click', function () {
+  scaleValue -= SCALE_VALUE_STEP;
+
+  if (scaleValue < MIN_SCALE_VALUE) {
+    scaleValue = MIN_SCALE_VALUE;
+  }
+
+  setScaleValue(scaleValue);
+});
+
+scaleControlBigger.addEventListener('click', function () {
+  scaleValue += SCALE_VALUE_STEP;
+
+  if (scaleValue > MAX_SCALE_VALUE) {
+    scaleValue = MAX_SCALE_VALUE;
+  }
+
+  setScaleValue(scaleValue);
 });
 
 effectLevelPin.addEventListener('mousedown', onMouseDownLevelPin);
@@ -206,7 +234,14 @@ function closeFileEditor() {
   userFileEditor.classList.add('hidden');
   nameOfUploadFile.value = '';
   clearEffect();
+  imagePreview.style.transform = '';
+  scaleValue = MAX_SCALE_VALUE;
   document.removeEventListener('keydown', onFileEditorEscPress);
+}
+
+function setScaleValue(value) {
+  scaleValueIndicator.value = value + '%';
+  imagePreview.style.transform = 'scale(' + value / 100 + ')';
 }
 
 function onMouseDownLevelPin(downEvt) {
