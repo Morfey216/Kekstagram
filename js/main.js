@@ -326,6 +326,34 @@ function clearEffect() {
   effectLevelDepth.style.width = '';
 }
 
+hashtagsInput.addEventListener('blur', function (hashEvt) {
+  var heshtagsArray = getHeshtagsArray();
+  var validationErrors = getValidationErrors(heshtagsArray);
+
+  hashEvt.target.setCustomValidity(validationErrors);
+});
+
+function getHeshtagsArray() {
+  var heshtagsList = [];
+  var heshtags = hashtagsInput.value;
+  var sliceStartIndex = 0;
+  var sliceEndIndex = 0;
+
+  while (sliceEndIndex >= 0) {
+    sliceEndIndex = heshtags.indexOf(' ', sliceStartIndex);
+    heshtagsList.push(heshtags.slice(sliceStartIndex, (sliceEndIndex < 0 ? heshtags.length : sliceEndIndex)));
+    sliceStartIndex = sliceEndIndex + 1;
+  }
+
+  return heshtagsList;
+}
+
+function getValidationErrors(heshtags) {
+  var errordMesage = '';
+
+  return errordMesage;
+}
+
 // Открываем большую фотографию
 
 var allSmallPictures = document.querySelectorAll('.picture');
