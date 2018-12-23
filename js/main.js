@@ -326,11 +326,16 @@ function clearEffect() {
   effectLevelDepth.style.width = '';
 }
 
-hashtagsInput.addEventListener('blur', function (hashEvt) {
-  var heshtagsArray = getHeshtagsArray();
-  var validationErrors = getValidationErrors(heshtagsArray);
+hashtagsInput.addEventListener('input', function (hashEvt) {
+  var validationErrors = getValidationErrors(getHeshtagsArray());
 
   hashEvt.target.setCustomValidity(validationErrors);
+
+  if (validationErrors !== '') {
+    hashtagsInput.style.borderColor = 'red';
+  } else {
+    hashtagsInput.style.borderColor = '';
+  }
 });
 
 function getHeshtagsArray() {
@@ -349,9 +354,46 @@ function getHeshtagsArray() {
 }
 
 function getValidationErrors(heshtags) {
-  var errordMesage = '';
+  var errorMesage = '';
+  var noHeshtag = 0;
 
-  return errordMesage;
+  heshtags.forEach(function (heshtag) {
+    if (heshtag === '') {
+      noHeshtag++;
+    }
+
+    if (heshtag !== '' && heshtag[0] !== '#') {
+      errorMesage = 'хэш-тег должен начинатся с символа # (решётка)';
+    } else if (heshtag.length === 1) {
+      errorMesage = 'хеш-тег не может состоять только из одной решётки';
+    } else if (heshtag.includes('#', 1)) {
+      errorMesage = 'хеш-теги разделяются пробелами';
+    } else if (heshtag.length > 20) {
+      errorMesage = 'максимальная длина одного хэш-тега 20 символов, включая решётку';
+    }
+  });
+
+  if (heshtags.length - noHeshtag > 5) {
+    errorMesage = 'нельзя указать больше пяти хэш-тегов';
+  }
+
+  if (getEqualHeshtags(heshtags).length > 0) {
+    errorMesage = 'нельзя использовать одинаковые хэш-теги (с учетом регистра))';
+  }
+
+  function getEqualHeshtags(allHeshtags) {
+    var equalHeshtags = allHeshtags.map(function (thisHeshtag) {
+      return thisHeshtag.toUpperCase();
+    }).filter(function (heshtagValue, currentIndex, currentHeshtags) {
+      return currentHeshtags.indexOf(heshtagValue, currentIndex) !== currentHeshtags.lastIndexOf(heshtagValue) && currentHeshtags.indexOf(heshtagValue) === currentIndex;
+    }).filter(function (currentHeshtag) {
+      return currentHeshtag !== '';
+    });
+
+    return equalHeshtags;
+  }
+
+  return errorMesage;
 }
 
 // Открываем большую фотографию
