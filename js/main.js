@@ -354,10 +354,36 @@ function getHeshtagsArray() {
 }
 
 function getValidationErrors(heshtags) {
-  var errorMesage = '';
+  var errorMessage = '';
   var noHeshtag = 0;
   var MAX_LONG_HESHTAG = 20;
   var MAX_QUANTITY_HESHTAG = 5;
+  var validationErrorList = {
+    singleSymbol: {
+      errorActive: false,
+      errorText: 'Хеш-тег не может состоять только из одной решётки'
+    },
+    firstSymbol: {
+      errorActive: false,
+      errorText: 'Хэш-тег должен начинатся с символа # (решётка)'
+    },
+    separator: {
+      errorActive: false,
+      errorText: 'Хеш-теги разделяются пробелами'
+    },
+    longHeshtag: {
+      errorActive: false,
+      errorText: 'Максимальная длина одного хэш-тега ' + MAX_LONG_HESHTAG + ' символов, включая решётку'
+    },
+    sameHeshtag: {
+      errorActive: false,
+      errorText: 'Нельзя использовать одинаковые хэш-теги (с учетом регистра)'
+    },
+    manyHeshtag: {
+      errorActive: false,
+      errorText: 'Нельзя указать больше ' + MAX_QUANTITY_HESHTAG + ' хэш-тегов'
+    }
+  };
 
   heshtags.forEach(function (heshtag) {
     if (heshtag === '') {
@@ -365,22 +391,26 @@ function getValidationErrors(heshtags) {
     }
 
     if (heshtag !== '' && heshtag[0] !== '#') {
-      errorMesage = 'хэш-тег должен начинатся с символа # (решётка)';
+      validationErrorList.firstSymbol.errorActive = true;
     } else if (heshtag.length === 1) {
-      errorMesage = 'хеш-тег не может состоять только из одной решётки';
-    } else if (heshtag.includes('#', 1)) {
-      errorMesage = 'хеш-теги разделяются пробелами';
-    } else if (heshtag.length > MAX_LONG_HESHTAG) {
-      errorMesage = 'максимальная длина одного хэш-тега ' + MAX_LONG_HESHTAG + ' символов, включая решётку';
+      validationErrorList.singleSymbol.errorActive = true;
+    }
+
+    if (heshtag.includes('#', 1)) {
+      validationErrorList.separator.errorActive = true;
+    }
+
+    if (heshtag.length > MAX_LONG_HESHTAG) {
+      validationErrorList.longHeshtag.errorActive = true;
     }
   });
 
   if (heshtags.length - noHeshtag > MAX_QUANTITY_HESHTAG) {
-    errorMesage = 'нельзя указать больше ' + MAX_QUANTITY_HESHTAG + ' хэш-тегов';
+    validationErrorList.manyHeshtag.errorActive = true;
   }
 
   if (getEqualHeshtags(heshtags).length > 0) {
-    errorMesage = 'нельзя использовать одинаковые хэш-теги (с учетом регистра))';
+    validationErrorList.sameHeshtag.errorActive = true;
   }
 
   function getEqualHeshtags(allHeshtags) {
@@ -395,7 +425,15 @@ function getValidationErrors(heshtags) {
     return equalHeshtags;
   }
 
-  return errorMesage;
+  var validationErrorNames = Object.keys(validationErrorList);
+
+  validationErrorNames.forEach(function (errorName) {
+    if (validationErrorList[errorName].errorActive) {
+      errorMessage += validationErrorList[errorName].errorText + '. \n';
+    }
+  });
+
+  return errorMessage;
 }
 
 // Открываем большую фотографию
