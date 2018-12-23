@@ -252,10 +252,10 @@ function onMouseDownLevelPin(downEvt) {
   var effectLevelLineCoords = getCoords(effectLevelLine);
   var effectRange = currentEffectObj.maxLevelEffect - currentEffectObj.minLevelEffect;
 
-  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mousemove', onPinMove);
   document.addEventListener('mouseup', onMouseUp);
 
-  function onMouseMove(moveEvt) {
+  function onPinMove(moveEvt) {
     var newLeft = moveEvt.clientX - effectLevelLineCoords.left;
     var maxLeft = effectLevelLine.offsetWidth;
 
@@ -270,16 +270,17 @@ function onMouseDownLevelPin(downEvt) {
     effectLevelPin.style.left = newLeft + 'px';
     effectLevelDepth.style.width = newLeft + 'px';
     effectValue = newLeft * 100 / maxLeft;
+    effectLevelValue.setAttribute('value', effectValue);
 
     var effectDepth = (effectRange / 100) * effectValue + currentEffectObj.minLevelEffect;
 
     imagePreview.style.filter = currentEffectObj.effectFilter + '(' + effectDepth + currentEffectObj.effectDimension + ')';
   }
 
-  function onMouseUp() {
-    document.removeEventListener('mousemove', onMouseMove);
+  function onMouseUp(upEvt) {
+    onPinMove(upEvt);
+    document.removeEventListener('mousemove', onPinMove);
     document.removeEventListener('mouseup', onMouseUp);
-    effectLevelValue.setAttribute('value', effectValue);
   }
 }
 
