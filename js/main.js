@@ -236,6 +236,8 @@ function closeFileEditor() {
   clearEffect();
   imagePreview.style.transform = '';
   scaleValue = MAX_SCALE_VALUE;
+  hashtagsInput.setCustomValidity('');
+  hashtagsInput.style.borderColor = '';
   document.removeEventListener('keydown', onFileEditorEscPress);
 }
 
@@ -326,15 +328,15 @@ function clearEffect() {
   effectLevelDepth.style.width = '';
 }
 
-hashtagsInput.addEventListener('input', function (hashEvt) {
+hashtagsInput.addEventListener('input', function () {
   var validationErrors = getValidationErrors(getHeshtagsArray());
-
-  hashEvt.target.setCustomValidity(validationErrors);
 
   if (validationErrors !== '') {
     hashtagsInput.style.borderColor = 'red';
+    hashtagsInput.setCustomValidity(validationErrors);
   } else {
     hashtagsInput.style.borderColor = '';
+    hashtagsInput.setCustomValidity('');
   }
 });
 
