@@ -356,6 +356,8 @@ function getHeshtagsArray() {
 function getValidationErrors(heshtags) {
   var errorMesage = '';
   var noHeshtag = 0;
+  var MAX_LONG_HESHTAG = 20;
+  var MAX_QUANTITY_HESHTAG = 5;
 
   heshtags.forEach(function (heshtag) {
     if (heshtag === '') {
@@ -368,13 +370,13 @@ function getValidationErrors(heshtags) {
       errorMesage = 'хеш-тег не может состоять только из одной решётки';
     } else if (heshtag.includes('#', 1)) {
       errorMesage = 'хеш-теги разделяются пробелами';
-    } else if (heshtag.length > 20) {
-      errorMesage = 'максимальная длина одного хэш-тега 20 символов, включая решётку';
+    } else if (heshtag.length > MAX_LONG_HESHTAG) {
+      errorMesage = 'максимальная длина одного хэш-тега ' + MAX_LONG_HESHTAG + ' символов, включая решётку';
     }
   });
 
-  if (heshtags.length - noHeshtag > 5) {
-    errorMesage = 'нельзя указать больше пяти хэш-тегов';
+  if (heshtags.length - noHeshtag > MAX_QUANTITY_HESHTAG) {
+    errorMesage = 'нельзя указать больше ' + MAX_QUANTITY_HESHTAG + ' хэш-тегов';
   }
 
   if (getEqualHeshtags(heshtags).length > 0) {
