@@ -1,12 +1,15 @@
 'use strict';
 
 (function () {
-  var allSmallPictures = document.querySelectorAll('.picture');
 
-  for (var numberSmallPicture = 0; numberSmallPicture < allSmallPictures.length; numberSmallPicture++) {
-    allSmallPictures[numberSmallPicture].addEventListener('click', function (evt) {
-      drawBigPicture(evt.target.parentElement.getAttribute('data-picture-position'));
-    });
+  function preview() {
+    var allSmallPictures = document.querySelectorAll('.picture');
+
+    for (var numberSmallPicture = 0; numberSmallPicture < allSmallPictures.length; numberSmallPicture++) {
+      allSmallPictures[numberSmallPicture].addEventListener('click', function (evt) {
+        drawBigPicture(evt.target.parentElement.getAttribute('data-picture-position'));
+      });
+    }
   }
 
   function drawBigPicture(numberPicture) {
@@ -102,5 +105,7 @@
       }
     }
   }
+
+  window.preview = preview;
 
 })();

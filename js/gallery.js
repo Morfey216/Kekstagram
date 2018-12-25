@@ -1,5 +1,6 @@
 'use strict';
 
 (function () {
-  window.drawPictures(window.usersPictures);
+  // window.drawPictures(window.usersPictures);
+  // window.preview();
 })();

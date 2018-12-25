@@ -16,12 +16,14 @@
     return pictureElement;
   }
 
-  window.drawPictures = function (picturesKit) {
+  function drawPictures(picturesKit) {
     for (var index = 0; index < picturesKit.length; index++) {
       fragment.appendChild(renderPicture(picturesKit[index], index));
     }
 
     userPictureDialog.appendChild(fragment);
-  };
+  }
+
+  window.drawPictures = drawPictures;
 
 })();

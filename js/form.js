@@ -219,7 +219,7 @@
   }
 
   hashtagsInput.addEventListener('input', function () {
-    var validationErrors = getValidationErrors(getHeshtagsArray());
+    var validationErrors = getValidationErrors(getHashtagsArray());
 
     if (validationErrors !== '') {
       hashtagsInput.style.borderColor = 'red';
@@ -230,26 +230,26 @@
     }
   });
 
-  function getHeshtagsArray() {
-    var heshtagsList = [];
-    var heshtags = hashtagsInput.value;
+  function getHashtagsArray() {
+    var hashtagsList = [];
+    var hashtags = hashtagsInput.value;
     var sliceStartIndex = 0;
     var sliceEndIndex = 0;
 
     while (sliceEndIndex >= 0) {
-      sliceEndIndex = heshtags.indexOf(' ', sliceStartIndex);
-      heshtagsList.push(heshtags.slice(sliceStartIndex, (sliceEndIndex < 0 ? heshtags.length : sliceEndIndex)));
+      sliceEndIndex = hashtags.indexOf(' ', sliceStartIndex);
+      hashtagsList.push(hashtags.slice(sliceStartIndex, (sliceEndIndex < 0 ? hashtags.length : sliceEndIndex)));
       sliceStartIndex = sliceEndIndex + 1;
     }
 
-    return heshtagsList;
+    return hashtagsList;
   }
 
-  function getValidationErrors(heshtags) {
+  function getValidationErrors(hashtags) {
     var errorMessage = '';
-    var noHeshtag = 0;
-    var MAX_LONG_HESHTAG = 20;
-    var MAX_QUANTITY_HESHTAG = 5;
+    var noHashtag = 0;
+    var MAX_LONG_HASHTAG = 20;
+    var MAX_QUANTITY_HASHTAG = 5;
     var validationErrorList = {
       singleSymbol: {
         errorActive: false,
@@ -263,61 +263,65 @@
         errorActive: false,
         errorText: 'Хеш-теги разделяются пробелами'
       },
-      longHeshtag: {
+      longHashtag: {
         errorActive: false,
-        errorText: 'Максимальная длина одного хэш-тега ' + MAX_LONG_HESHTAG + ' символов, включая решётку'
+        errorText: 'Максимальная длина одного хэш-тега ' + MAX_LONG_HASHTAG + ' символов, включая решётку'
       },
-      sameHeshtag: {
+      sameHashtag: {
         errorActive: false,
         errorText: 'Нельзя использовать одинаковые хэш-теги (с учетом регистра)'
       },
-      manyHeshtag: {
+      manyHashtag: {
         errorActive: false,
-        errorText: 'Нельзя указать больше ' + MAX_QUANTITY_HESHTAG + ' хэш-тегов'
+        errorText: 'Нельзя указать больше ' + MAX_QUANTITY_HASHTAG + ' хэш-тегов'
       }
     };
 
-    heshtags.forEach(function (heshtag) {
-      if (heshtag === '') {
-        noHeshtag++;
+    var validationErrorNames = Object.keys(validationErrorList);
+
+    hashtags.forEach(function (hashtag) {
+      getPersonalHashtagError(hashtag);
+    });
+
+    function getPersonalHashtagError(hashtag) {
+      if (hashtag === '') {
+        noHashtag++;
       }
 
-      if (heshtag !== '' && heshtag[0] !== '#') {
+      if (hashtag !== '' && hashtag[0] !== '#') {
         validationErrorList.firstSymbol.errorActive = true;
-      } else if (heshtag.length === 1) {
+      } else if (hashtag.length === 1) {
         validationErrorList.singleSymbol.errorActive = true;
       }
 
-      if (heshtag.includes('#', 1)) {
+      if (hashtag.includes('#', 1)) {
         validationErrorList.separator.errorActive = true;
       }
 
-      if (heshtag.length > MAX_LONG_HESHTAG) {
-        validationErrorList.longHeshtag.errorActive = true;
+      if (hashtag.length > MAX_LONG_HASHTAG) {
+        validationErrorList.longHashtag.errorActive = true;
       }
-    });
-
-    if (heshtags.length - noHeshtag > MAX_QUANTITY_HESHTAG) {
-      validationErrorList.manyHeshtag.errorActive = true;
     }
 
-    if (getEqualHeshtags(heshtags).length > 0) {
-      validationErrorList.sameHeshtag.errorActive = true;
+    if (hashtags.length - noHashtag > MAX_QUANTITY_HASHTAG) {
+      validationErrorList.manyHashtag.errorActive = true;
     }
 
-    function getEqualHeshtags(allHeshtags) {
-      var equalHeshtags = allHeshtags.map(function (thisHeshtag) {
-        return thisHeshtag.toUpperCase();
-      }).filter(function (heshtagValue, currentIndex, currentHeshtags) {
-        return currentHeshtags.indexOf(heshtagValue, currentIndex) !== currentHeshtags.lastIndexOf(heshtagValue) && currentHeshtags.indexOf(heshtagValue) === currentIndex;
-      }).filter(function (currentHeshtag) {
-        return currentHeshtag !== '';
+    if (getEqualHashtags(hashtags).length > 0) {
+      validationErrorList.sameHashtag.errorActive = true;
+    }
+
+    function getEqualHashtags(allHashtags) {
+      var equalHashtags = allHashtags.map(function (thisHashtag) {
+        return thisHashtag.toUpperCase();
+      }).filter(function (hashtagValue, currentIndex, currentHashtags) {
+        return currentHashtags.indexOf(hashtagValue, currentIndex) !== currentHashtags.lastIndexOf(hashtagValue) && currentHashtags.indexOf(hashtagValue) === currentIndex;
+      }).filter(function (currentHashtag) {
+        return currentHashtag !== '';
       });
 
-      return equalHeshtags;
+      return equalHashtags;
     }
-
-    var validationErrorNames = Object.keys(validationErrorList);
 
     validationErrorNames.forEach(function (errorName) {
       if (validationErrorList[errorName].errorActive) {

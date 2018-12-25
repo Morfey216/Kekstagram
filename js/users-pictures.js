@@ -82,5 +82,7 @@
   }
 
   window.usersPictures = getAllPictures();
+  window.drawPictures(window.usersPictures);
+  window.preview();
 
 })();
