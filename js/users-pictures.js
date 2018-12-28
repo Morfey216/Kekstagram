@@ -81,8 +81,31 @@
     };
   }
 
-  window.usersPictures = getAllPictures();
-  window.drawPictures(window.usersPictures);
-  window.preview();
+  // НОВЫЙ КОД - работа с сервером
+
+  function onLoad(allPicture) {
+    window.usersPictures = allPicture;
+    window.drawPictures(window.usersPictures);
+    window.preview();
+  }
+
+  function onError(errorMessage) {
+    var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorMessageElement = errorMessageTemplate.cloneNode(true);
+    var fragment = document.createDocumentFragment();
+
+    errorMessageElement.querySelector('.error__title').textContent = errorMessage;
+    fragment.appendChild(errorMessageElement);
+
+    document.querySelector('main').appendChild(fragment);
+  }
+
+  window.backend.load(onLoad, onError);
+
+  // КОНЕЦ НОВОГО КОДА - работа с сервером
+
+  window.usPictures = getAllPictures();
+  // window.drawPictures(window.usersPictures);
+  // window.preview();
 
 })();

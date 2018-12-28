@@ -331,4 +331,50 @@
 
     return errorMessage;
   }
+
+  function onLoad() {
+    closeFileEditor();
+    showSuccess();
+  }
+
+  function showSuccess() {
+    var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
+    var successMessageElement = successMessageTemplate.cloneNode(true);
+
+    document.querySelector('main').appendChild(successMessageElement);
+
+    var successWindow = document.querySelector('.success');
+    var successButton = successWindow.querySelector('.success__button');
+
+    successWindow.addEventListener('click', closeSuccess);
+    successButton.addEventListener('click', closeSuccess);
+    document.addEventListener('keydown', closeFromEsc);
+
+    function closeFromEsc(evt) {
+      window.util.isEscEvent(evt, closeSuccess);
+    }
+
+    function closeSuccess() {
+      document.removeEventListener('keydown', closeFromEsc);
+      successWindow.removeEventListener('click', closeSuccess);
+      document.querySelector('main').removeChild(successMessageElement);
+    }
+  }
+
+  function onError(errorMessage) {
+    var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorMessageElement = errorMessageTemplate.cloneNode(true);
+    var fragment = document.createDocumentFragment();
+
+    errorMessageElement.querySelector('.error__title').textContent = errorMessage;
+    fragment.appendChild(errorMessageElement);
+
+    document.querySelector('main').appendChild(fragment);
+  }
+
+  imageUploadForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.upload(new FormData(imageUploadForm), onLoad, onError);
+  });
+
 })();
