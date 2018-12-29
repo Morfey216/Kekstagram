@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var LOAD_OK = 200;
 
   function load(onLoad, onError) {
     var URL = 'https://js.dump.academy/kekstagram/data';
@@ -8,7 +9,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === LOAD_OK) {
         onLoad(xhr.response);
       } else {
         onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -35,10 +36,12 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === LOAD_OK) {
         onLoad();
+      } else if (xhr.response !== null) {
+        onError(xhr.response);
       } else {
-        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+        onError('Ошибка: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
 

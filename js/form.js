@@ -368,8 +368,33 @@
 
     errorMessageElement.querySelector('.error__title').textContent = errorMessage;
     fragment.appendChild(errorMessageElement);
-
     document.querySelector('main').appendChild(fragment);
+
+    var errorWindow = document.querySelector('.error');
+    var errorButtons = errorWindow.querySelectorAll('.error__button');
+    errorWindow.style.zIndex = 10;
+
+    errorWindow.addEventListener('click', closeError);
+    errorButtons[0].addEventListener('click', closeError);
+    errorButtons[1].addEventListener('click', closeErrorAndForm);
+    document.addEventListener('keydown', closeErrorFromEsc);
+
+    function closeErrorFromEsc(evt) {
+      window.util.isEscEvent(evt, closeErrorAndForm);
+    }
+
+    function closeError() {
+      errorWindow.removeEventListener('click', closeError);
+      errorButtons[0].removeEventListener('click', closeError);
+      errorButtons[1].removeEventListener('click', closeErrorAndForm);
+      document.removeEventListener('keydown', closeErrorFromEsc);
+      document.querySelector('main').removeChild(errorWindow);
+    }
+
+    function closeErrorAndForm() {
+      closeError();
+      closeFileEditor();
+    }
   }
 
   imageUploadForm.addEventListener('submit', function (evt) {

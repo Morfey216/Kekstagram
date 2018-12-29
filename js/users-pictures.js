@@ -95,9 +95,30 @@
     var fragment = document.createDocumentFragment();
 
     errorMessageElement.querySelector('.error__title').textContent = errorMessage;
+
+    var errorButtonsBlock = errorMessageElement.querySelector('.error__buttons');
+    errorButtonsBlock.removeChild(errorButtonsBlock.querySelectorAll('.error__button')[1]);
     fragment.appendChild(errorMessageElement);
 
     document.querySelector('main').appendChild(fragment);
+
+    var errorWindow = document.querySelector('.error');
+    var errorButton = errorWindow.querySelector('.error__button');
+
+    errorWindow.addEventListener('click', closeError);
+    errorButton.addEventListener('click', closeError);
+    document.addEventListener('keydown', closeFromEsc);
+
+    function closeFromEsc(evt) {
+      window.util.isEscEvent(evt, closeError);
+    }
+
+    function closeError() {
+      errorWindow.removeEventListener('click', closeError);
+      errorButton.removeEventListener('click', closeError);
+      document.removeEventListener('keydown', closeFromEsc);
+      document.querySelector('main').removeChild(errorWindow);
+    }
   }
 
   window.backend.load(onLoad, onError);
