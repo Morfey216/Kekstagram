@@ -52,19 +52,15 @@
   function createUserPicture(n) {
     return {
       url: 'photos/' + (n + 1) + '.jpg',
-      likes: getIndexFromRange(MIN_LIKE, MAX_LIKE + 1),
+      likes: window.util.getIndexFromRange(MIN_LIKE, MAX_LIKE + 1),
       comments: createCommentsKit(),
-      description: DESCRIPTION_SAMPLES[getIndexFromRange(0, DESCRIPTION_SAMPLES.length)]
+      description: DESCRIPTION_SAMPLES[window.util.getIndexFromRange(0, DESCRIPTION_SAMPLES.length)]
     };
-  }
-
-  function getIndexFromRange(minIndex, maxIndex) {
-    return Math.floor(Math.random() * (maxIndex - minIndex)) + minIndex;
   }
 
   function createCommentsKit() {
     var commentsKit = [];
-    var commentQuantity = getIndexFromRange(MIN_COMMENT, MAX_COMMENT);
+    var commentQuantity = window.util.getIndexFromRange(MIN_COMMENT, MAX_COMMENT);
 
     for (var index = 0; index <= commentQuantity; index++) {
       commentsKit[index] = createComment();
@@ -75,9 +71,9 @@
 
   function createComment() {
     return {
-      avatar: 'img/avatar-' + [getIndexFromRange(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR + 1)] + '.svg',
-      message: COMMENT_SAMPLES[getIndexFromRange(0, COMMENT_SAMPLES.length)],
-      name: NAME_SAMPLES[getIndexFromRange(0, NAME_SAMPLES.length)]
+      avatar: 'img/avatar-' + [window.util.getIndexFromRange(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR + 1)] + '.svg',
+      message: COMMENT_SAMPLES[window.util.getIndexFromRange(0, COMMENT_SAMPLES.length)],
+      name: NAME_SAMPLES[window.util.getIndexFromRange(0, NAME_SAMPLES.length)]
     };
   }
 
