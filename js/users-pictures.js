@@ -91,18 +91,13 @@
 
   function onError(errorMessage) {
     var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
-    var errorMessageElement = errorMessageTemplate.cloneNode(true);
-    var fragment = document.createDocumentFragment();
+    var errorWindow = errorMessageTemplate.cloneNode(true);
+    var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
 
-    errorMessageElement.querySelector('.error__title').textContent = errorMessage;
-
-    var errorButtonsBlock = errorMessageElement.querySelector('.error__buttons');
+    errorWindow.querySelector('.error__title').textContent = errorMessage;
     errorButtonsBlock.removeChild(errorButtonsBlock.querySelectorAll('.error__button')[1]);
-    fragment.appendChild(errorMessageElement);
+    document.querySelector('main').appendChild(errorWindow);
 
-    document.querySelector('main').appendChild(fragment);
-
-    var errorWindow = document.querySelector('.error');
     var errorButton = errorWindow.querySelector('.error__button');
 
     errorWindow.addEventListener('click', closeError);
