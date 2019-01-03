@@ -23,21 +23,21 @@
       window.usersPictures = defaultPicturesKit;
       clearActiveFilterButton();
       filterPopular.classList.add('img-filters__button--active');
-      drawFilteredPictures();
+      window.debounce(drawFilteredPictures);
     });
 
     filterNew.addEventListener('click', function () {
       window.usersPictures = getNewPictures(defaultPicturesKit.slice());
       clearActiveFilterButton();
       filterNew.classList.add('img-filters__button--active');
-      drawFilteredPictures();
+      window.debounce(drawFilteredPictures);
     });
 
     filterDiscussed.addEventListener('click', function () {
       window.usersPictures = getDiscussedPictures(defaultPicturesKit.slice());
       clearActiveFilterButton();
       filterDiscussed.classList.add('img-filters__button--active');
-      drawFilteredPictures();
+      window.debounce(drawFilteredPictures);
     });
   }
 
