@@ -37,7 +37,7 @@
 
       if (endIndexOfComment >= window.usersPictures[numberPicture].comments.length) {
         endIndexOfComment = window.usersPictures[numberPicture].comments.length;
-        newCommentsLoadButton.classList.add('visually-hidden');
+        newCommentsLoadButton.classList.add('hidden');
       }
 
       clearComments();
@@ -104,7 +104,7 @@
       }
 
       function closeBigPicture() {
-        newCommentsLoadButton.classList.remove('visually-hidden');
+        newCommentsLoadButton.classList.remove('hidden');
         userBigPictureDialog.classList.add('hidden');
         document.removeEventListener('keydown', onBigPictureEscPress);
         newCommentsLoadButton.removeEventListener('click', renderNewComments);
