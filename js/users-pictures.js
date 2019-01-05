@@ -83,7 +83,7 @@
     window.usersPictures = allPicture;
     window.drawPictures(window.usersPictures);
     window.preview();
-    window.filtration();
+    window.filtrate();
   }
 
   function onError(errorMessage) {

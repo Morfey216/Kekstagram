@@ -8,7 +8,7 @@
   var filterNotActivated = true;
   var NUMBER_OF_NEW_IMAGES = 10;
 
-  function filtration() {
+  function filtrate() {
     if (filterNotActivated) {
       var defaultPicturesKit = window.usersPictures;
       filterNotActivated = false;
@@ -80,6 +80,6 @@
     });
   }
 
-  window.filtration = filtration;
+  window.filtrate = filtrate;
 
 })();
