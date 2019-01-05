@@ -3,10 +3,7 @@
 (function () {
 
   var filterBlock = document.querySelector('.img-filters');
-  var filtersButtons = filterBlock.querySelectorAll('.img-filters__button');
-  var filterPopular = filterBlock.querySelector('#filter-popular');
-  var filterNew = filterBlock.querySelector('#filter-new');
-  var filterDiscussed = filterBlock.querySelector('#filter-discussed');
+  var filterButtons = filterBlock.querySelectorAll('.img-filters__button');
 
   var filterNotActivated = true;
   var NUMBER_OF_NEW_IMAGES = 10;
@@ -19,25 +16,25 @@
 
     filterBlock.classList.remove('img-filters--inactive');
 
-    filterPopular.addEventListener('click', function () {
-      window.usersPictures = defaultPicturesKit;
-      clearActiveFilterButton();
-      filterPopular.classList.add('img-filters__button--active');
-      window.debounce(drawFilteredPictures);
-    });
+    filterButtons.forEach(function (filterButton, filterIndex) {
+      filterButton.addEventListener('click', onFilterSelect);
 
-    filterNew.addEventListener('click', function () {
-      window.usersPictures = getNewPictures(defaultPicturesKit.slice());
-      clearActiveFilterButton();
-      filterNew.classList.add('img-filters__button--active');
-      window.debounce(drawFilteredPictures);
-    });
-
-    filterDiscussed.addEventListener('click', function () {
-      window.usersPictures = getDiscussedPictures(defaultPicturesKit.slice());
-      clearActiveFilterButton();
-      filterDiscussed.classList.add('img-filters__button--active');
-      window.debounce(drawFilteredPictures);
+      function onFilterSelect() {
+        switch (filterIndex) {
+          case 0:
+            window.usersPictures = defaultPicturesKit;
+            break;
+          case 1:
+            window.usersPictures = getNewPictures(defaultPicturesKit.slice());
+            break;
+          case 2:
+            window.usersPictures = getDiscussedPictures(defaultPicturesKit.slice());
+            break;
+        }
+        clearActiveFilterButton();
+        filterButton.classList.add('img-filters__button--active');
+        window.debounce(drawFilteredPictures);
+      }
     });
   }
 
@@ -78,7 +75,7 @@
   }
 
   function clearActiveFilterButton() {
-    filtersButtons.forEach(function (filterButton) {
+    filterButtons.forEach(function (filterButton) {
       filterButton.classList.remove('img-filters__button--active');
     });
   }
