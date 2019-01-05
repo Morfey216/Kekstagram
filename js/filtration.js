@@ -40,9 +40,10 @@
 
   function drawFilteredPictures() {
     var pictures = document.querySelectorAll('.picture');
+    var picturesBlock = document.querySelector('.pictures');
 
     pictures.forEach(function (picture) {
-      document.querySelector('.pictures').removeChild(picture);
+      picturesBlock.removeChild(picture);
     });
 
     window.drawPictures(window.usersPictures);
@@ -55,8 +56,7 @@
 
     for (var i = 0; i < NUMBER_OF_NEW_IMAGES; i++) {
       indexNewPicture = window.util.getIndexFromRange(0, allPictures.length);
-      newPictures.push(allPictures[indexNewPicture]);
-      allPictures.splice(indexNewPicture, 1);
+      newPictures.push(allPictures.splice(indexNewPicture, 1)[0]);
     }
 
     return newPictures;
