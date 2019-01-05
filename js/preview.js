@@ -14,6 +14,9 @@
 
   function drawBigPicture(numberPicture) {
     var userBigPictureDialog = document.querySelector('.big-picture');
+    var socialComments = userBigPictureDialog.querySelector('.social__comments');
+    var newCommentsLoadButton = userBigPictureDialog.querySelector('.comments-loader');
+    var startIndexOfComment = 0;
 
     renderGeneralInformation();
     renderNewComments();
@@ -29,13 +32,12 @@
 
     function renderNewComments() {
       var COMMENTS_INTERVAL = 5;
-      var socialComments = userBigPictureDialog.querySelector('.social__comments');
       var commentFragment = document.createDocumentFragment();
-      var startIndexOfComment = 0;
       var endIndexOfComment = startIndexOfComment + COMMENTS_INTERVAL;
 
-      if (endIndexOfComment > window.usersPictures[numberPicture].comments.length) {
+      if (endIndexOfComment >= window.usersPictures[numberPicture].comments.length) {
         endIndexOfComment = window.usersPictures[numberPicture].comments.length;
+        newCommentsLoadButton.classList.add('hidden');
       }
 
       clearComments();
@@ -44,6 +46,9 @@
         commentFragment.appendChild(renderNewComment(window.usersPictures[numberPicture].comments[indexComment]));
       }
 
+      userBigPictureDialog.querySelector('.social__comment-count').firstChild.textContent = endIndexOfComment + ' из ';
+
+      startIndexOfComment = endIndexOfComment;
       socialComments.appendChild(commentFragment);
 
       function renderNewComment(commentData) {
@@ -83,9 +88,8 @@
       var userBigPictureClose = userBigPictureDialog.querySelector('.big-picture__cancel');
 
       userBigPictureDialog.classList.remove('hidden');
-      userBigPictureDialog.querySelector('.social__comment-count').classList.add('visually-hidden');
-      userBigPictureDialog.querySelector('.comments-loader').classList.add('visually-hidden');
       document.addEventListener('keydown', onBigPictureEscPress);
+      newCommentsLoadButton.addEventListener('click', renderNewComments);
 
       userBigPictureClose.addEventListener('click', function () {
         closeBigPicture();
@@ -100,8 +104,10 @@
       }
 
       function closeBigPicture() {
+        newCommentsLoadButton.classList.remove('hidden');
         userBigPictureDialog.classList.add('hidden');
         document.removeEventListener('keydown', onBigPictureEscPress);
+        newCommentsLoadButton.removeEventListener('click', renderNewComments);
       }
     }
   }

@@ -1,19 +1,24 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
+  var Keycode = {
+    ESC: 27,
+    ENTER: 13
+  };
 
   window.util = {
     isEscEvent: function (evt, action) {
-      if (evt.keyCode === ESC_KEYCODE) {
+      if (evt.keyCode === Keycode.ESC) {
         action();
       }
     },
     isEnterEvent: function (evt, action) {
-      if (evt.keyCode === ENTER_KEYCODE) {
+      if (evt.keyCode === Keycode.ENTER) {
         action();
       }
+    },
+    getIndexFromRange: function (minIndex, maxIndex) {
+      return Math.floor(Math.random() * (maxIndex - minIndex)) + minIndex;
     }
   };
 })();

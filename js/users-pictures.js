@@ -52,19 +52,15 @@
   function createUserPicture(n) {
     return {
       url: 'photos/' + (n + 1) + '.jpg',
-      likes: getIndexFromRange(MIN_LIKE, MAX_LIKE + 1),
+      likes: window.util.getIndexFromRange(MIN_LIKE, MAX_LIKE + 1),
       comments: createCommentsKit(),
-      description: DESCRIPTION_SAMPLES[getIndexFromRange(0, DESCRIPTION_SAMPLES.length)]
+      description: DESCRIPTION_SAMPLES[window.util.getIndexFromRange(0, DESCRIPTION_SAMPLES.length)]
     };
-  }
-
-  function getIndexFromRange(minIndex, maxIndex) {
-    return Math.floor(Math.random() * (maxIndex - minIndex)) + minIndex;
   }
 
   function createCommentsKit() {
     var commentsKit = [];
-    var commentQuantity = getIndexFromRange(MIN_COMMENT, MAX_COMMENT);
+    var commentQuantity = window.util.getIndexFromRange(MIN_COMMENT, MAX_COMMENT);
 
     for (var index = 0; index <= commentQuantity; index++) {
       commentsKit[index] = createComment();
@@ -75,9 +71,9 @@
 
   function createComment() {
     return {
-      avatar: 'img/avatar-' + [getIndexFromRange(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR + 1)] + '.svg',
-      message: COMMENT_SAMPLES[getIndexFromRange(0, COMMENT_SAMPLES.length)],
-      name: NAME_SAMPLES[getIndexFromRange(0, NAME_SAMPLES.length)]
+      avatar: 'img/avatar-' + [window.util.getIndexFromRange(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR + 1)] + '.svg',
+      message: COMMENT_SAMPLES[window.util.getIndexFromRange(0, COMMENT_SAMPLES.length)],
+      name: NAME_SAMPLES[window.util.getIndexFromRange(0, NAME_SAMPLES.length)]
     };
   }
 
@@ -87,22 +83,18 @@
     window.usersPictures = allPicture;
     window.drawPictures(window.usersPictures);
     window.preview();
+    window.filtrate();
   }
 
   function onError(errorMessage) {
     var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
-    var errorMessageElement = errorMessageTemplate.cloneNode(true);
-    var fragment = document.createDocumentFragment();
+    var errorWindow = errorMessageTemplate.cloneNode(true);
+    var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
 
-    errorMessageElement.querySelector('.error__title').textContent = errorMessage;
-
-    var errorButtonsBlock = errorMessageElement.querySelector('.error__buttons');
+    errorWindow.querySelector('.error__title').textContent = errorMessage;
     errorButtonsBlock.removeChild(errorButtonsBlock.querySelectorAll('.error__button')[1]);
-    fragment.appendChild(errorMessageElement);
+    document.querySelector('main').appendChild(errorWindow);
 
-    document.querySelector('main').appendChild(fragment);
-
-    var errorWindow = document.querySelector('.error');
     var errorButton = errorWindow.querySelector('.error__button');
 
     errorWindow.addEventListener('click', closeError);

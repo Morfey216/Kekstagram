@@ -339,13 +339,10 @@
 
   function showSuccess() {
     var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
-    var successMessageElement = successMessageTemplate.cloneNode(true);
-
-    document.querySelector('main').appendChild(successMessageElement);
-
-    var successWindow = document.querySelector('.success');
+    var successWindow = successMessageTemplate.cloneNode(true);
     var successButton = successWindow.querySelector('.success__button');
 
+    document.querySelector('main').appendChild(successWindow);
     successWindow.addEventListener('click', closeSuccess);
     successButton.addEventListener('click', closeSuccess);
     document.addEventListener('keydown', closeFromEsc);
@@ -357,24 +354,24 @@
     function closeSuccess() {
       document.removeEventListener('keydown', closeFromEsc);
       successWindow.removeEventListener('click', closeSuccess);
-      document.querySelector('main').removeChild(successMessageElement);
+      document.querySelector('main').removeChild(successWindow);
     }
   }
 
   function onError(errorMessage) {
     var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
-    var errorMessageElement = errorMessageTemplate.cloneNode(true);
-    var fragment = document.createDocumentFragment();
-
-    errorMessageElement.querySelector('.error__title').textContent = errorMessage;
-    fragment.appendChild(errorMessageElement);
-    document.querySelector('main').appendChild(fragment);
-
-    var errorWindow = document.querySelector('.error');
+    var errorWindow = errorMessageTemplate.cloneNode(true);
     var errorButtons = errorWindow.querySelectorAll('.error__button');
+
+    if (typeof (errorMessage) === 'object') {
+      errorMessage = 'Файл не является изображением';
+    }
+
+    errorWindow.querySelector('.error__title').textContent = errorMessage;
+    document.querySelector('main').appendChild(errorWindow);
     errorWindow.style.zIndex = 10;
 
-    errorWindow.addEventListener('click', closeError);
+    errorWindow.addEventListener('click', closeErrorAndForm);
     errorButtons[0].addEventListener('click', closeError);
     errorButtons[1].addEventListener('click', closeErrorAndForm);
     document.addEventListener('keydown', closeErrorFromEsc);
@@ -384,7 +381,7 @@
     }
 
     function closeError() {
-      errorWindow.removeEventListener('click', closeError);
+      errorWindow.removeEventListener('click', closeErrorAndForm);
       errorButtons[0].removeEventListener('click', closeError);
       errorButtons[1].removeEventListener('click', closeErrorAndForm);
       document.removeEventListener('keydown', closeErrorFromEsc);
