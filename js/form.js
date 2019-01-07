@@ -165,14 +165,14 @@
   function onMouseDownLevelPin(downEvt) {
     downEvt.preventDefault();
 
-    var effectLevelLineCoords = getCoords(effectLevelLine);
+    var effectLevelLineLeftCoordinate = getLeftCoordinate(effectLevelLine);
     var effectRange = currentEffectObj.maxLevelEffect - currentEffectObj.minLevelEffect;
 
     document.addEventListener('mousemove', onPinMove);
     document.addEventListener('mouseup', onMouseUp);
 
     function onPinMove(moveEvt) {
-      var newLeft = moveEvt.clientX - effectLevelLineCoords.left;
+      var newLeft = moveEvt.clientX - effectLevelLineLeftCoordinate;
       var maxLeft = effectLevelLine.offsetWidth;
 
       if (newLeft < 0) {
@@ -204,12 +204,9 @@
     return false;
   };
 
-  function getCoords(element) {
+  function getLeftCoordinate(element) {
     var box = element.getBoundingClientRect();
-    return {
-      top: box.top + pageYOffset,
-      left: box.left + pageXOffset
-    };
+    return box.left + pageXOffset;
   }
 
   function onChoiceEffect(choiceEvt) {
