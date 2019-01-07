@@ -12,4 +12,5 @@
   }
 
   window.debounce = debounce;
+
 })();

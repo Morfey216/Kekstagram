@@ -21,6 +21,7 @@
   var effectValue = effectLevelValue.value;
   var choiceEffect = userImageEditor.querySelector('.effects__list');
   var FILE_TYPE_ERROR_MESSAGE = 'Файл не является изображением';
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var MAX_EFFECT_VALUE = 100;
   var MAX_LONG_HASHTAG = 20;
   var MAX_QUANTITY_HASHTAG = 5;
@@ -77,7 +78,6 @@
   var currentEffectObj = effectsListMap['none'];
 
   fileChooser.addEventListener('change', function () {
-    var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
     var file = fileChooser.files[0];
     var fileName = file.name.toLowerCase();
 

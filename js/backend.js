@@ -64,4 +64,5 @@
     load: load,
     upload: upload
   };
+
 })();

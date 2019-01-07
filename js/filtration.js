@@ -55,11 +55,15 @@
     var newPictures = [];
 
     for (var i = 0; i < NUMBER_OF_NEW_IMAGES; i++) {
-      indexNewPicture = window.util.getIndexFromRange(0, allPictures.length);
+      indexNewPicture = getIndexFromRange(0, allPictures.length);
       newPictures.push(allPictures.splice(indexNewPicture, 1)[0]);
     }
 
     return newPictures;
+  }
+
+  function getIndexFromRange(minIndex, maxIndex) {
+    return Math.floor(Math.random() * (maxIndex - minIndex)) + minIndex;
   }
 
   function getDiscussedPictures(allPictures) {

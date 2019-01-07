@@ -16,9 +16,7 @@
       if (evt.keyCode === Keycode.ENTER) {
         action();
       }
-    },
-    getIndexFromRange: function (minIndex, maxIndex) {
-      return Math.floor(Math.random() * (maxIndex - minIndex)) + minIndex;
     }
   };
+
 })();
