@@ -39,8 +39,8 @@
   }
 
   function drawFilteredPictures() {
-    var pictures = document.querySelectorAll('.picture');
     var picturesBlock = document.querySelector('.pictures');
+    var pictures = picturesBlock.querySelectorAll('.picture');
 
     pictures.forEach(function (picture) {
       picturesBlock.removeChild(picture);

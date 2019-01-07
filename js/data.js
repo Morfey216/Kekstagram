@@ -9,13 +9,14 @@
   }
 
   function onError(errorMessage) {
+    var mainBlock = document.querySelector('main');
     var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorWindow = errorMessageTemplate.cloneNode(true);
     var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
     errorButtonsBlock.removeChild(errorButtonsBlock.querySelector('.error__button:last-child'));
-    document.querySelector('main').appendChild(errorWindow);
+    mainBlock.appendChild(errorWindow);
 
     var errorButton = errorWindow.querySelector('.error__button');
 
@@ -31,7 +32,7 @@
       errorWindow.removeEventListener('click', closeError);
       errorButton.removeEventListener('click', closeError);
       document.removeEventListener('keydown', closeFromEsc);
-      document.querySelector('main').removeChild(errorWindow);
+      mainBlock.removeChild(errorWindow);
     }
   }
 

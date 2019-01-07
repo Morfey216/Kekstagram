@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var mainBlock = document.querySelector('main');
   var imageUploadForm = document.querySelector('.img-upload__form');
   var fileChooser = imageUploadForm.querySelector('#upload-file');
   var userImageEditor = imageUploadForm.querySelector('.img-upload__overlay');
@@ -364,7 +365,7 @@
     var successWindow = successMessageTemplate.cloneNode(true);
     var successButton = successWindow.querySelector('.success__button');
 
-    document.querySelector('main').appendChild(successWindow);
+    mainBlock.appendChild(successWindow);
     successWindow.addEventListener('click', closeSuccess);
     successButton.addEventListener('click', closeSuccess);
     document.addEventListener('keydown', closeFromEsc);
@@ -376,7 +377,7 @@
     function closeSuccess() {
       document.removeEventListener('keydown', closeFromEsc);
       successWindow.removeEventListener('click', closeSuccess);
-      document.querySelector('main').removeChild(successWindow);
+      mainBlock.removeChild(successWindow);
     }
   }
 
@@ -398,7 +399,7 @@
     }
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
-    document.querySelector('main').appendChild(errorWindow);
+    mainBlock.appendChild(errorWindow);
     errorWindow.style.zIndex = 10;
 
     errorWindow.addEventListener('click', closeErrorAndForm);
@@ -414,7 +415,7 @@
       errorRetryButton.removeEventListener('click', closeError);
       errorAnotherSelectionButton.removeEventListener('click', closeErrorAndForm);
       document.removeEventListener('keydown', closeErrorFromEsc);
-      document.querySelector('main').removeChild(errorWindow);
+      mainBlock.removeChild(errorWindow);
     }
 
     function closeErrorAndForm() {
