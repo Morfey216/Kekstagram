@@ -85,8 +85,10 @@
     }
 
     function showBigPicture() {
+      var bodyBlock = document.querySelector('body');
       var userBigPictureClose = userBigPictureDialog.querySelector('.big-picture__cancel');
 
+      bodyBlock.classList.add('modal-open');
       userBigPictureDialog.classList.remove('hidden');
       document.addEventListener('keydown', onBigPictureEscPress);
       newCommentsLoadButton.addEventListener('click', renderNewComments);
@@ -105,6 +107,7 @@
 
       function closeBigPicture() {
         newCommentsLoadButton.classList.remove('hidden');
+        bodyBlock.classList.remove('modal-open');
         userBigPictureDialog.classList.add('hidden');
         document.removeEventListener('keydown', onBigPictureEscPress);
         newCommentsLoadButton.removeEventListener('click', renderNewComments);

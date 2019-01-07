@@ -29,7 +29,6 @@
   var SCALE_VALUE_STEP = 25;
   var scaleValue = MAX_SCALE_VALUE;
 
-  // var EFFECTS_KIT = {
   var effectsListMap = {
     chrome: {
       effectName: 'chrome',
