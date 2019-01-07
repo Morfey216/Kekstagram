@@ -2,17 +2,18 @@
 
 (function () {
   var imageUploadForm = document.querySelector('.img-upload__form');
-  var nameOfUploadFile = imageUploadForm.querySelector('#upload-file');
-  var userFileEditor = imageUploadForm.querySelector('.img-upload__overlay');
-  var userFileEditorClose = userFileEditor.querySelector('.img-upload__cancel');
-  var imagePreview = userFileEditor.querySelector('.img-upload__preview');
-  var hashtagsInput = userFileEditor.querySelector('.text__hashtags');
-  var descriptionInput = userFileEditor.querySelector('.text__description');
+  var fileChooser = imageUploadForm.querySelector('#upload-file');
+  var userImageEditor = imageUploadForm.querySelector('.img-upload__overlay');
+  var userImageEditorClose = userImageEditor.querySelector('.img-upload__cancel');
+  var imagePreviewContainer = userImageEditor.querySelector('.img-upload__preview');
+  var imagePreview = userImageEditor.querySelector('.img-upload__preview img');
+  var hashtagsInput = userImageEditor.querySelector('.text__hashtags');
+  var descriptionInput = userImageEditor.querySelector('.text__description');
 
-  var effectLevel = userFileEditor.querySelector('.effect-level');
-  var scaleValueIndicator = userFileEditor.querySelector('.scale__control--value');
-  var scaleControlSmaller = userFileEditor.querySelector('.scale__control--smaller');
-  var scaleControlBigger = userFileEditor.querySelector('.scale__control--bigger');
+  var effectLevel = userImageEditor.querySelector('.effect-level');
+  var scaleValueIndicator = userImageEditor.querySelector('.scale__control--value');
+  var scaleControlSmaller = userImageEditor.querySelector('.scale__control--smaller');
+  var scaleControlBigger = userImageEditor.querySelector('.scale__control--bigger');
   var MIN_SCALE_VALUE = 25;
   var MAX_SCALE_VALUE = 100;
   var SCALE_VALUE_STEP = 25;
@@ -22,7 +23,7 @@
   var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
   var effectLevelValue = effectLevel.querySelector('.effect-level__value');
   var effectValue = effectLevelValue.value;
-  var choiceEffect = userFileEditor.querySelector('.effects__list');
+  var choiceEffect = userImageEditor.querySelector('.effects__list');
   var MAX_EFFECT_VALUE = 100;
 
   var EFFECTS_KIT = {
@@ -71,14 +72,38 @@
   };
 
   var currentEffectObj = EFFECTS_KIT['none'];
+  var FILE_TYPE_ERROR_MESSAGE = 'Файл не является изображением';
 
-  nameOfUploadFile.addEventListener('change', function () {
-    userFileEditor.classList.remove('hidden');
+  fileChooser.addEventListener('change', function () {
+    var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+    var file = fileChooser.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = FILE_TYPES.some(function (fileType) {
+      return fileName.endsWith(fileType);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        imagePreview.src = reader.result;
+      });
+
+      reader.readAsDataURL(file);
+      showImageEditor();
+    } else {
+      onError(FILE_TYPE_ERROR_MESSAGE);
+    }
+  });
+
+  function showImageEditor() {
+    userImageEditor.classList.remove('hidden');
     effectLevel.classList.add('img-filters--inactive');
     setScaleValue(scaleValue);
 
-    document.addEventListener('keydown', onFileEditorEscPress);
-  });
+    document.addEventListener('keydown', onImageEditorEscPress);
+  }
 
   scaleControlSmaller.addEventListener('click', function () {
     scaleValue -= SCALE_VALUE_STEP;
@@ -103,36 +128,36 @@
   effectLevelPin.addEventListener('mousedown', onMouseDownLevelPin);
   choiceEffect.addEventListener('focus', onChoiceEffect, true);
 
-  userFileEditorClose.addEventListener('click', function () {
-    closeFileEditor();
+  userImageEditorClose.addEventListener('click', function () {
+    closeImageEditor();
   });
 
-  userFileEditorClose.addEventListener('keydown', function (evt) {
-    window.util.isEnterEvent(evt, closeFileEditor);
+  userImageEditorClose.addEventListener('keydown', function (evt) {
+    window.util.isEnterEvent(evt, closeImageEditor);
   });
 
-  function onFileEditorEscPress(evt) {
+  function onImageEditorEscPress(evt) {
     if (document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
-      window.util.isEscEvent(evt, closeFileEditor);
+      window.util.isEscEvent(evt, closeImageEditor);
     }
   }
 
-  function closeFileEditor() {
-    userFileEditor.classList.add('hidden');
-    nameOfUploadFile.value = '';
+  function closeImageEditor() {
+    userImageEditor.classList.add('hidden');
+    fileChooser.value = '';
     clearEffect();
-    imagePreview.style.transform = '';
+    imagePreviewContainer.style.transform = '';
     scaleValue = MAX_SCALE_VALUE;
     hashtagsInput.setCustomValidity('');
     hashtagsInput.style.borderColor = '';
     hashtagsInput.value = '';
     descriptionInput.value = '';
-    document.removeEventListener('keydown', onFileEditorEscPress);
+    document.removeEventListener('keydown', onImageEditorEscPress);
   }
 
   function setScaleValue(value) {
     scaleValueIndicator.value = value + '%';
-    imagePreview.style.transform = 'scale(' + value / 100 + ')';
+    imagePreviewContainer.style.transform = 'scale(' + value / 100 + ')';
   }
 
   function onMouseDownLevelPin(downEvt) {
@@ -333,7 +358,7 @@
   }
 
   function onLoad() {
-    closeFileEditor();
+    closeImageEditor();
     showSuccess();
   }
 
@@ -361,10 +386,18 @@
   function onError(errorMessage) {
     var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorWindow = errorMessageTemplate.cloneNode(true);
-    var errorButtons = errorWindow.querySelectorAll('.error__button');
+    var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
+    var errorRetryButton = errorButtonsBlock.querySelector('.error__button:first-child');
+    var errorAnotherSelectionButton = errorButtonsBlock.querySelector('.error__button:last-child');
 
     if (typeof (errorMessage) === 'object') {
-      errorMessage = 'Файл не является изображением';
+      errorMessage = FILE_TYPE_ERROR_MESSAGE;
+    }
+
+    if (errorMessage === FILE_TYPE_ERROR_MESSAGE) {
+      errorButtonsBlock.removeChild(errorRetryButton);
+    } else {
+      errorRetryButton.addEventListener('click', closeError);
     }
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
@@ -372,8 +405,7 @@
     errorWindow.style.zIndex = 10;
 
     errorWindow.addEventListener('click', closeErrorAndForm);
-    errorButtons[0].addEventListener('click', closeError);
-    errorButtons[1].addEventListener('click', closeErrorAndForm);
+    errorAnotherSelectionButton.addEventListener('click', closeErrorAndForm);
     document.addEventListener('keydown', closeErrorFromEsc);
 
     function closeErrorFromEsc(evt) {
@@ -382,15 +414,15 @@
 
     function closeError() {
       errorWindow.removeEventListener('click', closeErrorAndForm);
-      errorButtons[0].removeEventListener('click', closeError);
-      errorButtons[1].removeEventListener('click', closeErrorAndForm);
+      errorRetryButton.removeEventListener('click', closeError);
+      errorAnotherSelectionButton.removeEventListener('click', closeErrorAndForm);
       document.removeEventListener('keydown', closeErrorFromEsc);
       document.querySelector('main').removeChild(errorWindow);
     }
 
     function closeErrorAndForm() {
       closeError();
-      closeFileEditor();
+      closeImageEditor();
     }
   }
 

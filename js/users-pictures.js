@@ -92,7 +92,7 @@
     var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
-    errorButtonsBlock.removeChild(errorButtonsBlock.querySelectorAll('.error__button')[1]);
+    errorButtonsBlock.removeChild(errorButtonsBlock.querySelector('.error__button:last-child'));
     document.querySelector('main').appendChild(errorWindow);
 
     var errorButton = errorWindow.querySelector('.error__button');
