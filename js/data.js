@@ -1,9 +1,10 @@
 'use strict';
 
 (function () {
-  function onLoad(allPicture) {
-    window.usersPictures = allPicture;
+  function onLoad(allPictures) {
+    window.usersPictures = allPictures;
     window.drawPictures(window.usersPictures);
+    window.form();
     window.preview();
     window.filtrate();
   }
