@@ -118,7 +118,5 @@
   // КОНЕЦ НОВОГО КОДА - работа с сервером
 
   window.usPictures = getAllPictures();
-  // window.drawPictures(window.usersPictures);
-  // window.preview();
 
 })();

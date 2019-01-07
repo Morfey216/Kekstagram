@@ -29,7 +29,8 @@
   var SCALE_VALUE_STEP = 25;
   var scaleValue = MAX_SCALE_VALUE;
 
-  var EFFECTS_KIT = {
+  // var EFFECTS_KIT = {
+  var effectsListMap = {
     chrome: {
       effectName: 'chrome',
       effectFilter: 'grayscale',
@@ -74,7 +75,7 @@
     }
   };
 
-  var currentEffectObj = EFFECTS_KIT['none'];
+  var currentEffectObj = effectsListMap['none'];
 
   fileChooser.addEventListener('change', function () {
     var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
@@ -218,10 +219,10 @@
   }
 
   function setEffect(effect) {
-    currentEffectObj = EFFECTS_KIT[effect];
+    currentEffectObj = effectsListMap[effect];
 
     if (typeof currentEffectObj === 'undefined') {
-      currentEffectObj = EFFECTS_KIT['none'];
+      currentEffectObj = effectsListMap['none'];
     }
 
     if (currentEffectObj.effectFilter === 'none') {
@@ -275,7 +276,7 @@
   function getValidationErrors(hashtags) {
     var errorMessage = '';
     var noHashtag = 0;
-    var validationErrorList = {
+    var validationErrorListMap = {
       singleSymbol: {
         errorActive: false,
         errorText: 'Хеш-тег не может состоять только из одной решётки'
@@ -302,7 +303,7 @@
       }
     };
 
-    var validationErrorNames = Object.keys(validationErrorList);
+    var validationErrorNames = Object.keys(validationErrorListMap);
 
     hashtags.forEach(function (hashtag) {
       getPersonalHashtagError(hashtag);
@@ -314,26 +315,26 @@
       }
 
       if (hashtag !== '' && hashtag[0] !== '#') {
-        validationErrorList.firstSymbol.errorActive = true;
+        validationErrorListMap.firstSymbol.errorActive = true;
       } else if (hashtag.length === 1) {
-        validationErrorList.singleSymbol.errorActive = true;
+        validationErrorListMap.singleSymbol.errorActive = true;
       }
 
       if (hashtag.includes('#', 1)) {
-        validationErrorList.separator.errorActive = true;
+        validationErrorListMap.separator.errorActive = true;
       }
 
       if (hashtag.length > MAX_LONG_HASHTAG) {
-        validationErrorList.longHashtag.errorActive = true;
+        validationErrorListMap.longHashtag.errorActive = true;
       }
     }
 
     if (hashtags.length - noHashtag > MAX_QUANTITY_HASHTAG) {
-      validationErrorList.manyHashtag.errorActive = true;
+      validationErrorListMap.manyHashtag.errorActive = true;
     }
 
     if (getEqualHashtags(hashtags).length > 0) {
-      validationErrorList.sameHashtag.errorActive = true;
+      validationErrorListMap.sameHashtag.errorActive = true;
     }
 
     function getEqualHashtags(allHashtags) {
@@ -349,8 +350,8 @@
     }
 
     validationErrorNames.forEach(function (errorName) {
-      if (validationErrorList[errorName].errorActive) {
-        errorMessage += validationErrorList[errorName].errorText + '. \n';
+      if (validationErrorListMap[errorName].errorActive) {
+        errorMessage += validationErrorListMap[errorName].errorText + '. \n';
       }
     });
 
