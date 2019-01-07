@@ -14,17 +14,20 @@
   var scaleValueIndicator = userImageEditor.querySelector('.scale__control--value');
   var scaleControlSmaller = userImageEditor.querySelector('.scale__control--smaller');
   var scaleControlBigger = userImageEditor.querySelector('.scale__control--bigger');
-  var MIN_SCALE_VALUE = 25;
-  var MAX_SCALE_VALUE = 100;
-  var SCALE_VALUE_STEP = 25;
-  var scaleValue = MAX_SCALE_VALUE;
   var effectLevelLine = effectLevel.querySelector('.effect-level__line');
   var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
   var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
   var effectLevelValue = effectLevel.querySelector('.effect-level__value');
   var effectValue = effectLevelValue.value;
   var choiceEffect = userImageEditor.querySelector('.effects__list');
+  var FILE_TYPE_ERROR_MESSAGE = 'Файл не является изображением';
   var MAX_EFFECT_VALUE = 100;
+  var MAX_LONG_HASHTAG = 20;
+  var MAX_QUANTITY_HASHTAG = 5;
+  var MIN_SCALE_VALUE = 25;
+  var MAX_SCALE_VALUE = 100;
+  var SCALE_VALUE_STEP = 25;
+  var scaleValue = MAX_SCALE_VALUE;
 
   var EFFECTS_KIT = {
     chrome: {
@@ -72,7 +75,6 @@
   };
 
   var currentEffectObj = EFFECTS_KIT['none'];
-  var FILE_TYPE_ERROR_MESSAGE = 'Файл не является изображением';
 
   fileChooser.addEventListener('change', function () {
     var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
@@ -273,8 +275,6 @@
   function getValidationErrors(hashtags) {
     var errorMessage = '';
     var noHashtag = 0;
-    var MAX_LONG_HASHTAG = 20;
-    var MAX_QUANTITY_HASHTAG = 5;
     var validationErrorList = {
       singleSymbol: {
         errorActive: false,

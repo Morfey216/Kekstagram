@@ -2,6 +2,7 @@
 
 (function () {
   var LOAD_OK = 200;
+  var TIMEOUT_INTERVAL = 10000;
 
   function load(onLoad, onError) {
     var URL = 'https://js.dump.academy/kekstagram/data';
@@ -24,7 +25,7 @@
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
 
-    xhr.timeout = 10000;
+    xhr.timeout = TIMEOUT_INTERVAL;
 
     xhr.open('GET', URL);
     xhr.send();
@@ -53,7 +54,7 @@
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
 
-    xhr.timeout = 10000;
+    xhr.timeout = TIMEOUT_INTERVAL;
 
     xhr.open('POST', URL);
     xhr.send(data);

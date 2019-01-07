@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var COMMENTS_INTERVAL = 5;
 
   function preview() {
     var allSmallPictures = document.querySelectorAll('.picture');
@@ -31,7 +32,6 @@
     }
 
     function renderNewComments() {
-      var COMMENTS_INTERVAL = 5;
       var commentFragment = document.createDocumentFragment();
       var endIndexOfComment = startIndexOfComment + COMMENTS_INTERVAL;
 
