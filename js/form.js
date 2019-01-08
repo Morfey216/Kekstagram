@@ -95,10 +95,10 @@
 
       reader.addEventListener('load', function () {
         imagePreview.src = reader.result;
+        showImageEditor();
       });
 
       reader.readAsDataURL(file);
-      showImageEditor();
     } else {
       onError(FILE_TYPE_ERROR_MESSAGE);
     }

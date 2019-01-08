@@ -20,6 +20,7 @@
     var startIndexOfComment = 0;
 
     renderGeneralInformation();
+    clearComments();
     renderNewComments();
     showBigPicture();
 
@@ -31,6 +32,12 @@
       userBigPictureDialog.querySelector('.comments-count').textContent = window.usersPictures[numberPicture].comments.length;
     }
 
+    function clearComments() {
+      while (socialComments.firstChild) {
+        socialComments.removeChild(socialComments.firstChild);
+      }
+    }
+
     function renderNewComments() {
       var commentFragment = document.createDocumentFragment();
       var endIndexOfComment = startIndexOfComment + COMMENTS_INTERVAL;
@@ -39,8 +46,6 @@
         endIndexOfComment = window.usersPictures[numberPicture].comments.length;
         newCommentsLoadButton.classList.add('hidden');
       }
-
-      clearComments();
 
       for (var indexComment = startIndexOfComment; indexComment < endIndexOfComment; indexComment++) {
         commentFragment.appendChild(renderNewComment(window.usersPictures[numberPicture].comments[indexComment]));
@@ -74,12 +79,6 @@
           paragraph.className = 'social__text';
           paragraph.textContent = commentData.message;
           return paragraph;
-        }
-      }
-
-      function clearComments() {
-        while (socialComments.firstChild) {
-          socialComments.removeChild(socialComments.firstChild);
         }
       }
     }
