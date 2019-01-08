@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var mainBlock = document.querySelector('main');
   var imageUploadForm = document.querySelector('.img-upload__form');
   var fileChooser = imageUploadForm.querySelector('#upload-file');
   var userImageEditor = imageUploadForm.querySelector('.img-upload__overlay');
@@ -14,19 +15,23 @@
   var scaleValueIndicator = userImageEditor.querySelector('.scale__control--value');
   var scaleControlSmaller = userImageEditor.querySelector('.scale__control--smaller');
   var scaleControlBigger = userImageEditor.querySelector('.scale__control--bigger');
-  var MIN_SCALE_VALUE = 25;
-  var MAX_SCALE_VALUE = 100;
-  var SCALE_VALUE_STEP = 25;
-  var scaleValue = MAX_SCALE_VALUE;
   var effectLevelLine = effectLevel.querySelector('.effect-level__line');
   var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
   var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
   var effectLevelValue = effectLevel.querySelector('.effect-level__value');
   var effectValue = effectLevelValue.value;
   var choiceEffect = userImageEditor.querySelector('.effects__list');
+  var FILE_TYPE_ERROR_MESSAGE = 'Файл не является изображением';
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var MAX_EFFECT_VALUE = 100;
+  var MAX_LONG_HASHTAG = 20;
+  var MAX_QUANTITY_HASHTAG = 5;
+  var MIN_SCALE_VALUE = 25;
+  var MAX_SCALE_VALUE = 100;
+  var SCALE_VALUE_STEP = 25;
+  var scaleValue = MAX_SCALE_VALUE;
 
-  var EFFECTS_KIT = {
+  var effectsListMap = {
     chrome: {
       effectName: 'chrome',
       effectFilter: 'grayscale',
@@ -71,11 +76,13 @@
     }
   };
 
-  var currentEffectObj = EFFECTS_KIT['none'];
-  var FILE_TYPE_ERROR_MESSAGE = 'Файл не является изображением';
+  var currentEffectObj = effectsListMap['none'];
 
-  fileChooser.addEventListener('change', function () {
-    var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+  function openForm() {
+    fileChooser.addEventListener('change', onFileChooser);
+  }
+
+  function onFileChooser() {
     var file = fileChooser.files[0];
     var fileName = file.name.toLowerCase();
 
@@ -88,14 +95,14 @@
 
       reader.addEventListener('load', function () {
         imagePreview.src = reader.result;
+        showImageEditor();
       });
 
       reader.readAsDataURL(file);
-      showImageEditor();
     } else {
       onError(FILE_TYPE_ERROR_MESSAGE);
     }
-  });
+  }
 
   function showImageEditor() {
     userImageEditor.classList.remove('hidden');
@@ -128,9 +135,7 @@
   effectLevelPin.addEventListener('mousedown', onMouseDownLevelPin);
   choiceEffect.addEventListener('focus', onChoiceEffect, true);
 
-  userImageEditorClose.addEventListener('click', function () {
-    closeImageEditor();
-  });
+  userImageEditorClose.addEventListener('click', closeImageEditor);
 
   userImageEditorClose.addEventListener('keydown', function (evt) {
     window.util.isEnterEvent(evt, closeImageEditor);
@@ -145,6 +150,7 @@
   function closeImageEditor() {
     userImageEditor.classList.add('hidden');
     fileChooser.value = '';
+    imagePreview.src = '';
     clearEffect();
     imagePreviewContainer.style.transform = '';
     scaleValue = MAX_SCALE_VALUE;
@@ -163,14 +169,14 @@
   function onMouseDownLevelPin(downEvt) {
     downEvt.preventDefault();
 
-    var effectLevelLineCoords = getCoords(effectLevelLine);
+    var effectLevelLineLeftCoordinate = getLeftCoordinate(effectLevelLine);
     var effectRange = currentEffectObj.maxLevelEffect - currentEffectObj.minLevelEffect;
 
     document.addEventListener('mousemove', onPinMove);
     document.addEventListener('mouseup', onMouseUp);
 
     function onPinMove(moveEvt) {
-      var newLeft = moveEvt.clientX - effectLevelLineCoords.left;
+      var newLeft = moveEvt.clientX - effectLevelLineLeftCoordinate;
       var maxLeft = effectLevelLine.offsetWidth;
 
       if (newLeft < 0) {
@@ -202,12 +208,9 @@
     return false;
   };
 
-  function getCoords(element) {
+  function getLeftCoordinate(element) {
     var box = element.getBoundingClientRect();
-    return {
-      top: box.top + pageYOffset,
-      left: box.left + pageXOffset
-    };
+    return box.left + pageXOffset;
   }
 
   function onChoiceEffect(choiceEvt) {
@@ -216,10 +219,10 @@
   }
 
   function setEffect(effect) {
-    currentEffectObj = EFFECTS_KIT[effect];
+    currentEffectObj = effectsListMap[effect];
 
     if (typeof currentEffectObj === 'undefined') {
-      currentEffectObj = EFFECTS_KIT['none'];
+      currentEffectObj = effectsListMap['none'];
     }
 
     if (currentEffectObj.effectFilter === 'none') {
@@ -255,6 +258,11 @@
     }
   });
 
+  imageUploadForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.upload(new FormData(imageUploadForm), onLoad, onError);
+  });
+
   function getHashtagsArray() {
     var hashtagsList = [];
     var hashtags = hashtagsInput.value;
@@ -273,9 +281,7 @@
   function getValidationErrors(hashtags) {
     var errorMessage = '';
     var noHashtag = 0;
-    var MAX_LONG_HASHTAG = 20;
-    var MAX_QUANTITY_HASHTAG = 5;
-    var validationErrorList = {
+    var validationErrorListMap = {
       singleSymbol: {
         errorActive: false,
         errorText: 'Хеш-тег не может состоять только из одной решётки'
@@ -302,7 +308,7 @@
       }
     };
 
-    var validationErrorNames = Object.keys(validationErrorList);
+    var validationErrorNames = Object.keys(validationErrorListMap);
 
     hashtags.forEach(function (hashtag) {
       getPersonalHashtagError(hashtag);
@@ -314,26 +320,26 @@
       }
 
       if (hashtag !== '' && hashtag[0] !== '#') {
-        validationErrorList.firstSymbol.errorActive = true;
+        validationErrorListMap.firstSymbol.errorActive = true;
       } else if (hashtag.length === 1) {
-        validationErrorList.singleSymbol.errorActive = true;
+        validationErrorListMap.singleSymbol.errorActive = true;
       }
 
       if (hashtag.includes('#', 1)) {
-        validationErrorList.separator.errorActive = true;
+        validationErrorListMap.separator.errorActive = true;
       }
 
       if (hashtag.length > MAX_LONG_HASHTAG) {
-        validationErrorList.longHashtag.errorActive = true;
+        validationErrorListMap.longHashtag.errorActive = true;
       }
     }
 
     if (hashtags.length - noHashtag > MAX_QUANTITY_HASHTAG) {
-      validationErrorList.manyHashtag.errorActive = true;
+      validationErrorListMap.manyHashtag.errorActive = true;
     }
 
     if (getEqualHashtags(hashtags).length > 0) {
-      validationErrorList.sameHashtag.errorActive = true;
+      validationErrorListMap.sameHashtag.errorActive = true;
     }
 
     function getEqualHashtags(allHashtags) {
@@ -349,8 +355,8 @@
     }
 
     validationErrorNames.forEach(function (errorName) {
-      if (validationErrorList[errorName].errorActive) {
-        errorMessage += validationErrorList[errorName].errorText + '. \n';
+      if (validationErrorListMap[errorName].errorActive) {
+        errorMessage += validationErrorListMap[errorName].errorText + '. \n';
       }
     });
 
@@ -367,7 +373,7 @@
     var successWindow = successMessageTemplate.cloneNode(true);
     var successButton = successWindow.querySelector('.success__button');
 
-    document.querySelector('main').appendChild(successWindow);
+    mainBlock.appendChild(successWindow);
     successWindow.addEventListener('click', closeSuccess);
     successButton.addEventListener('click', closeSuccess);
     document.addEventListener('keydown', closeFromEsc);
@@ -379,7 +385,7 @@
     function closeSuccess() {
       document.removeEventListener('keydown', closeFromEsc);
       successWindow.removeEventListener('click', closeSuccess);
-      document.querySelector('main').removeChild(successWindow);
+      mainBlock.removeChild(successWindow);
     }
   }
 
@@ -401,7 +407,7 @@
     }
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
-    document.querySelector('main').appendChild(errorWindow);
+    mainBlock.appendChild(errorWindow);
     errorWindow.style.zIndex = 10;
 
     errorWindow.addEventListener('click', closeErrorAndForm);
@@ -417,7 +423,7 @@
       errorRetryButton.removeEventListener('click', closeError);
       errorAnotherSelectionButton.removeEventListener('click', closeErrorAndForm);
       document.removeEventListener('keydown', closeErrorFromEsc);
-      document.querySelector('main').removeChild(errorWindow);
+      mainBlock.removeChild(errorWindow);
     }
 
     function closeErrorAndForm() {
@@ -426,9 +432,6 @@
     }
   }
 
-  imageUploadForm.addEventListener('submit', function (evt) {
-    evt.preventDefault();
-    window.backend.upload(new FormData(imageUploadForm), onLoad, onError);
-  });
+  window.form = openForm;
 
 })();

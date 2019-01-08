@@ -6,14 +6,14 @@
   var userPictureDialog = document.querySelector('.pictures');
 
   function renderPicture(picture, indexPicture) {
-    var pictureElement = usersPictureTemplate.cloneNode(true);
+    var newPicture = usersPictureTemplate.cloneNode(true);
 
-    pictureElement.querySelector('.picture__img').src = picture.url;
-    pictureElement.querySelector('.picture__likes').textContent = picture.likes;
-    pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
-    pictureElement.setAttribute('data-picture-position', indexPicture);
+    newPicture.querySelector('.picture__img').src = picture.url;
+    newPicture.querySelector('.picture__likes').textContent = picture.likes;
+    newPicture.querySelector('.picture__comments').textContent = picture.comments.length;
+    newPicture.setAttribute('data-picture-position', indexPicture);
 
-    return pictureElement;
+    return newPicture;
   }
 
   function drawPictures(picturesKit) {

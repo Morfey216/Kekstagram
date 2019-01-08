@@ -14,11 +14,9 @@
     },
     isEnterEvent: function (evt, action) {
       if (evt.keyCode === Keycode.ENTER) {
-        action();
+        action(evt);
       }
-    },
-    getIndexFromRange: function (minIndex, maxIndex) {
-      return Math.floor(Math.random() * (maxIndex - minIndex)) + minIndex;
     }
   };
+
 })();

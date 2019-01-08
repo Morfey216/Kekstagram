@@ -1,14 +1,23 @@
 'use strict';
 
 (function () {
+  var COMMENTS_INTERVAL = 5;
 
   function preview() {
     var allSmallPictures = document.querySelectorAll('.picture');
 
-    for (var numberSmallPicture = 0; numberSmallPicture < allSmallPictures.length; numberSmallPicture++) {
-      allSmallPictures[numberSmallPicture].addEventListener('click', function (evt) {
-        drawBigPicture(evt.target.parentElement.getAttribute('data-picture-position'));
+    allSmallPictures.forEach(initSmallPictures);
+
+    function initSmallPictures(smallPicture) {
+      smallPicture.addEventListener('click', drawCurrentBigPicture);
+
+      smallPicture.addEventListener('keydown', function (evt) {
+        window.util.isEnterEvent(evt, drawCurrentBigPicture);
       });
+
+      function drawCurrentBigPicture(evt) {
+        drawBigPicture(evt.currentTarget.getAttribute('data-picture-position'));
+      }
     }
   }
 
@@ -19,6 +28,7 @@
     var startIndexOfComment = 0;
 
     renderGeneralInformation();
+    clearComments();
     renderNewComments();
     showBigPicture();
 
@@ -30,8 +40,13 @@
       userBigPictureDialog.querySelector('.comments-count').textContent = window.usersPictures[numberPicture].comments.length;
     }
 
+    function clearComments() {
+      while (socialComments.firstChild) {
+        socialComments.removeChild(socialComments.firstChild);
+      }
+    }
+
     function renderNewComments() {
-      var COMMENTS_INTERVAL = 5;
       var commentFragment = document.createDocumentFragment();
       var endIndexOfComment = startIndexOfComment + COMMENTS_INTERVAL;
 
@@ -39,8 +54,6 @@
         endIndexOfComment = window.usersPictures[numberPicture].comments.length;
         newCommentsLoadButton.classList.add('hidden');
       }
-
-      clearComments();
 
       for (var indexComment = startIndexOfComment; indexComment < endIndexOfComment; indexComment++) {
         commentFragment.appendChild(renderNewComment(window.usersPictures[numberPicture].comments[indexComment]));
@@ -76,17 +89,13 @@
           return paragraph;
         }
       }
-
-      function clearComments() {
-        while (socialComments.firstChild) {
-          socialComments.removeChild(socialComments.firstChild);
-        }
-      }
     }
 
     function showBigPicture() {
+      var bodyBlock = document.querySelector('body');
       var userBigPictureClose = userBigPictureDialog.querySelector('.big-picture__cancel');
 
+      bodyBlock.classList.add('modal-open');
       userBigPictureDialog.classList.remove('hidden');
       document.addEventListener('keydown', onBigPictureEscPress);
       newCommentsLoadButton.addEventListener('click', renderNewComments);
@@ -105,6 +114,7 @@
 
       function closeBigPicture() {
         newCommentsLoadButton.classList.remove('hidden');
+        bodyBlock.classList.remove('modal-open');
         userBigPictureDialog.classList.add('hidden');
         document.removeEventListener('keydown', onBigPictureEscPress);
         newCommentsLoadButton.removeEventListener('click', renderNewComments);
