@@ -16,26 +16,28 @@
 
     filterBlock.classList.remove('img-filters--inactive');
 
-    filterButtons.forEach(function (filterButton, filterIndex) {
-      filterButton.addEventListener('click', onFilterSelect);
+    filterButtons.forEach(initFilterButton);
+
+    function initFilterButton(currentFilterButton) {
+      currentFilterButton.addEventListener('click', onFilterSelect);
 
       function onFilterSelect() {
-        switch (filterIndex) {
-          case 0:
+        switch (currentFilterButton.id) {
+          case 'filter-popular':
             window.usersPictures = defaultPicturesKit;
             break;
-          case 1:
+          case 'filter-new':
             window.usersPictures = getNewPictures(defaultPicturesKit.slice());
             break;
-          case 2:
+          case 'filter-discussed':
             window.usersPictures = getDiscussedPictures(defaultPicturesKit.slice());
             break;
         }
         clearActiveFilterButton();
-        filterButton.classList.add('img-filters__button--active');
+        currentFilterButton.classList.add('img-filters__button--active');
         window.debounce(drawFilteredPictures);
       }
-    });
+    }
   }
 
   function drawFilteredPictures() {
