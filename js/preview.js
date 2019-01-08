@@ -6,10 +6,18 @@
   function preview() {
     var allSmallPictures = document.querySelectorAll('.picture');
 
-    for (var numberSmallPicture = 0; numberSmallPicture < allSmallPictures.length; numberSmallPicture++) {
-      allSmallPictures[numberSmallPicture].addEventListener('click', function (evt) {
-        drawBigPicture(evt.target.parentElement.getAttribute('data-picture-position'));
+    allSmallPictures.forEach(initSmallPictures);
+
+    function initSmallPictures(smallPicture) {
+      smallPicture.addEventListener('click', drawCurrentBigPicture);
+
+      smallPicture.addEventListener('keydown', function (evt) {
+        window.util.isEnterEvent(evt, drawCurrentBigPicture);
       });
+
+      function drawCurrentBigPicture(evt) {
+        drawBigPicture(evt.currentTarget.getAttribute('data-picture-position'));
+      }
     }
   }
 
