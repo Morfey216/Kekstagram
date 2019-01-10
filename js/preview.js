@@ -2,6 +2,8 @@
 
 (function () {
   var COMMENTS_INTERVAL = 5;
+  var AVATAR_WIDTH = 35;
+  var AVATAR_HEIGHT = 35;
 
   function preview() {
     var allSmallPictures = document.querySelectorAll('.picture');
@@ -77,8 +79,8 @@
           img.className = 'social__picture';
           img.src = commentData.avatar;
           img.alt = 'Аватар комментатора фотографии';
-          img.width = '35';
-          img.height = '35';
+          img.width = AVATAR_WIDTH;
+          img.height = AVATAR_HEIGHT;
           return img;
         }
 

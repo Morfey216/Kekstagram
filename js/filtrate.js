@@ -1,12 +1,10 @@
 'use strict';
 
 (function () {
-
+  var NUMBER_OF_NEW_IMAGES = 10;
   var filterBlock = document.querySelector('.img-filters');
   var filterButtons = filterBlock.querySelectorAll('.img-filters__button');
-
   var filterNotActivated = true;
-  var NUMBER_OF_NEW_IMAGES = 10;
 
   function filtrate() {
     if (filterNotActivated) {

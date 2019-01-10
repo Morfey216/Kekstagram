@@ -1,26 +1,6 @@
 'use strict';
 
 (function () {
-  var mainBlock = document.querySelector('main');
-  var imageUploadForm = document.querySelector('.img-upload__form');
-  var fileChooser = imageUploadForm.querySelector('#upload-file');
-  var userImageEditor = imageUploadForm.querySelector('.img-upload__overlay');
-  var userImageEditorClose = userImageEditor.querySelector('.img-upload__cancel');
-  var imagePreviewContainer = userImageEditor.querySelector('.img-upload__preview');
-  var imagePreview = userImageEditor.querySelector('.img-upload__preview img');
-  var hashtagsInput = userImageEditor.querySelector('.text__hashtags');
-  var descriptionInput = userImageEditor.querySelector('.text__description');
-
-  var effectLevel = userImageEditor.querySelector('.effect-level');
-  var scaleValueIndicator = userImageEditor.querySelector('.scale__control--value');
-  var scaleControlSmaller = userImageEditor.querySelector('.scale__control--smaller');
-  var scaleControlBigger = userImageEditor.querySelector('.scale__control--bigger');
-  var effectLevelLine = effectLevel.querySelector('.effect-level__line');
-  var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
-  var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
-  var effectLevelValue = effectLevel.querySelector('.effect-level__value');
-  var effectValue = effectLevelValue.value;
-  var choiceEffect = userImageEditor.querySelector('.effects__list');
   var FILE_TYPE_ERROR_MESSAGE = 'Файл не является изображением';
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var MAX_EFFECT_VALUE = 100;
@@ -29,9 +9,7 @@
   var MIN_SCALE_VALUE = 25;
   var MAX_SCALE_VALUE = 100;
   var SCALE_VALUE_STEP = 25;
-  var scaleValue = MAX_SCALE_VALUE;
-
-  var effectsListMap = {
+  var EFFECTS = {
     chrome: {
       effectName: 'chrome',
       effectFilter: 'grayscale',
@@ -76,7 +54,27 @@
     }
   };
 
-  var currentEffectObj = effectsListMap['none'];
+  var mainBlock = document.querySelector('main');
+  var imageUploadForm = document.querySelector('.img-upload__form');
+  var fileChooser = imageUploadForm.querySelector('#upload-file');
+  var userImageEditor = imageUploadForm.querySelector('.img-upload__overlay');
+  var userImageEditorClose = userImageEditor.querySelector('.img-upload__cancel');
+  var imagePreviewContainer = userImageEditor.querySelector('.img-upload__preview');
+  var imagePreview = userImageEditor.querySelector('.img-upload__preview img');
+  var hashtagsInput = userImageEditor.querySelector('.text__hashtags');
+  var descriptionInput = userImageEditor.querySelector('.text__description');
+  var effectLevel = userImageEditor.querySelector('.effect-level');
+  var scaleValueIndicator = userImageEditor.querySelector('.scale__control--value');
+  var scaleControlSmaller = userImageEditor.querySelector('.scale__control--smaller');
+  var scaleControlBigger = userImageEditor.querySelector('.scale__control--bigger');
+  var effectLevelLine = effectLevel.querySelector('.effect-level__line');
+  var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
+  var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
+  var effectLevelValue = effectLevel.querySelector('.effect-level__value');
+  var effectValue = effectLevelValue.value;
+  var choiceEffect = userImageEditor.querySelector('.effects__list');
+  var scaleValue = MAX_SCALE_VALUE;
+  var currentEffectObj = EFFECTS['none'];
 
   function openForm() {
     fileChooser.addEventListener('change', onFileChooser);
@@ -218,18 +216,14 @@
     setEffect(choiceEvt.target.value);
   }
 
-  function setEffect(effect) {
-    currentEffectObj = effectsListMap[effect];
-
-    if (typeof currentEffectObj === 'undefined') {
-      currentEffectObj = effectsListMap['none'];
-    }
+  function setEffect(currentEffect) {
+    currentEffectObj = EFFECTS[currentEffect] || EFFECTS['none'];
 
     if (currentEffectObj.effectFilter === 'none') {
       effectLevel.classList.add('img-filters--inactive');
     } else {
       effectLevel.classList.remove('img-filters--inactive');
-      imagePreview.classList.add('effects__preview--' + effect);
+      imagePreview.classList.add('effects__preview--' + currentEffect);
       effectLevelValue.setAttribute('value', MAX_EFFECT_VALUE);
       effectValue = MAX_EFFECT_VALUE;
       imagePreview.style.filter = currentEffectObj.effectFilter + '(' + currentEffectObj.maxLevelEffect + currentEffectObj.effectDimension + ')';
@@ -264,82 +258,53 @@
   });
 
   function getHashtagsArray() {
-    var hashtagsList = [];
     var hashtags = hashtagsInput.value;
-    var sliceStartIndex = 0;
-    var sliceEndIndex = 0;
 
-    while (sliceEndIndex >= 0) {
-      sliceEndIndex = hashtags.indexOf(' ', sliceStartIndex);
-      hashtagsList.push(hashtags.slice(sliceStartIndex, (sliceEndIndex < 0 ? hashtags.length : sliceEndIndex)));
-      sliceStartIndex = sliceEndIndex + 1;
-    }
+    var hashtagsList = hashtags.split(' ').filter(function (currentElement) {
+      return currentElement !== '';
+    });
 
     return hashtagsList;
   }
 
   function getValidationErrors(hashtags) {
     var errorMessage = '';
-    var noHashtag = 0;
-    var validationErrorListMap = {
-      singleSymbol: {
-        errorActive: false,
-        errorText: 'Хеш-тег не может состоять только из одной решётки'
-      },
-      firstSymbol: {
-        errorActive: false,
-        errorText: 'Хэш-тег должен начинатся с символа # (решётка)'
-      },
-      separator: {
-        errorActive: false,
-        errorText: 'Хеш-теги разделяются пробелами'
-      },
-      longHashtag: {
-        errorActive: false,
-        errorText: 'Максимальная длина одного хэш-тега ' + MAX_LONG_HASHTAG + ' символов, включая решётку'
-      },
-      sameHashtag: {
-        errorActive: false,
-        errorText: 'Нельзя использовать одинаковые хэш-теги (с учетом регистра)'
-      },
-      manyHashtag: {
-        errorActive: false,
-        errorText: 'Нельзя указать больше ' + MAX_QUANTITY_HASHTAG + ' хэш-тегов'
-      }
+    var errors = {
+      firstSymbol: false,
+      singleSymbol: false,
+      separator: false,
+      longHashtag: false,
+      sameHashtag: false,
+      manyHashtag: false
     };
 
-    var validationErrorNames = Object.keys(validationErrorListMap);
+    var errorNameToErrorMessage = {
+      firstSymbol: 'Хэш-тег должен начинатся с символа # (решётка)',
+      singleSymbol: 'Хеш-тег не может состоять только из одной решётки',
+      separator: 'Хеш-теги разделяются пробелами',
+      longHashtag: 'Максимальная длина одного хэш-тега ' + MAX_LONG_HASHTAG + ' символов, включая решётку',
+      sameHashtag: 'Нельзя использовать одинаковые хэш-теги (с учетом регистра)',
+      manyHashtag: 'Нельзя указать больше ' + MAX_QUANTITY_HASHTAG + ' хэш-тегов'
+    };
 
-    hashtags.forEach(function (hashtag) {
-      getPersonalHashtagError(hashtag);
+    var validationErrorNames = Object.keys(errors);
+
+    hashtags.forEach(getPersonalHashtagError);
+
+    errors.manyHashtag = errors.manyHashtag || (hashtags.length > MAX_QUANTITY_HASHTAG);
+    errors.sameHashtag = errors.sameHashtag || (getEqualHashtags(hashtags).length > 0);
+
+    validationErrorNames.forEach(function (errorName) {
+      if (errors[errorName]) {
+        errorMessage += errorNameToErrorMessage[errorName] + '. \n';
+      }
     });
 
     function getPersonalHashtagError(hashtag) {
-      if (hashtag === '') {
-        noHashtag++;
-      }
-
-      if (hashtag !== '' && hashtag[0] !== '#') {
-        validationErrorListMap.firstSymbol.errorActive = true;
-      } else if (hashtag.length === 1) {
-        validationErrorListMap.singleSymbol.errorActive = true;
-      }
-
-      if (hashtag.includes('#', 1)) {
-        validationErrorListMap.separator.errorActive = true;
-      }
-
-      if (hashtag.length > MAX_LONG_HASHTAG) {
-        validationErrorListMap.longHashtag.errorActive = true;
-      }
-    }
-
-    if (hashtags.length - noHashtag > MAX_QUANTITY_HASHTAG) {
-      validationErrorListMap.manyHashtag.errorActive = true;
-    }
-
-    if (getEqualHashtags(hashtags).length > 0) {
-      validationErrorListMap.sameHashtag.errorActive = true;
+      errors.firstSymbol = errors.firstSymbol || (hashtag[0] !== '#');
+      errors.singleSymbol = errors.singleSymbol || ((hashtag.length === 1) && hashtag[0] === '#');
+      errors.separator = errors.separator || (hashtag.includes('#', 1));
+      errors.longHashtag = errors.longHashtag || (hashtag.length > MAX_LONG_HASHTAG);
     }
 
     function getEqualHashtags(allHashtags) {
@@ -347,18 +312,10 @@
         return thisHashtag.toUpperCase();
       }).filter(function (hashtagValue, currentIndex, currentHashtags) {
         return currentHashtags.indexOf(hashtagValue, currentIndex) !== currentHashtags.lastIndexOf(hashtagValue) && currentHashtags.indexOf(hashtagValue) === currentIndex;
-      }).filter(function (currentHashtag) {
-        return currentHashtag !== '';
       });
 
       return equalHashtags;
     }
-
-    validationErrorNames.forEach(function (errorName) {
-      if (validationErrorListMap[errorName].errorActive) {
-        errorMessage += validationErrorListMap[errorName].errorText + '. \n';
-      }
-    });
 
     return errorMessage;
   }
@@ -408,7 +365,6 @@
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
     mainBlock.appendChild(errorWindow);
-    errorWindow.style.zIndex = 10;
 
     errorWindow.addEventListener('click', closeErrorAndForm);
     errorAnotherSelectionButton.addEventListener('click', closeErrorAndForm);
