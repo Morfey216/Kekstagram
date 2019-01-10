@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var mainBlock = document.querySelector('main');
+  var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
+
   function onLoad(allPictures) {
     window.usersPictures = allPictures;
     window.drawPictures(window.usersPictures);
@@ -10,8 +13,6 @@
   }
 
   function onError(errorMessage) {
-    var mainBlock = document.querySelector('main');
-    var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorWindow = errorMessageTemplate.cloneNode(true);
     var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
 
@@ -19,20 +20,16 @@
     errorButtonsBlock.removeChild(errorButtonsBlock.querySelector('.error__button:last-child'));
     mainBlock.appendChild(errorWindow);
 
-    var errorButton = errorWindow.querySelector('.error__button');
+    errorWindow.addEventListener('click', onCloseError);
+    document.addEventListener('keydown', onCloseFromEsc);
 
-    errorWindow.addEventListener('click', closeError);
-    errorButton.addEventListener('click', closeError);
-    document.addEventListener('keydown', closeFromEsc);
-
-    function closeFromEsc(evt) {
-      window.util.isEscEvent(evt, closeError);
+    function onCloseFromEsc(evt) {
+      window.util.isEscEvent(evt, onCloseError);
     }
 
-    function closeError() {
-      errorWindow.removeEventListener('click', closeError);
-      errorButton.removeEventListener('click', closeError);
-      document.removeEventListener('keydown', closeFromEsc);
+    function onCloseError() {
+      errorWindow.removeEventListener('click', onCloseError);
+      document.removeEventListener('keydown', onCloseFromEsc);
       mainBlock.removeChild(errorWindow);
     }
   }

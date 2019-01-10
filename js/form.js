@@ -9,6 +9,7 @@
   var MIN_SCALE_VALUE = 25;
   var MAX_SCALE_VALUE = 100;
   var SCALE_VALUE_STEP = 25;
+  var UPPER_ZINDEX = 10;
   var EFFECTS = {
     chrome: {
       effectName: 'chrome',
@@ -71,16 +72,18 @@
   var effectLevelPin = effectLevel.querySelector('.effect-level__pin');
   var effectLevelDepth = effectLevel.querySelector('.effect-level__depth');
   var effectLevelValue = effectLevel.querySelector('.effect-level__value');
+  var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
+  var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
   var effectValue = effectLevelValue.value;
   var choiceEffect = userImageEditor.querySelector('.effects__list');
   var scaleValue = MAX_SCALE_VALUE;
   var currentEffectObj = EFFECTS['none'];
 
   function openForm() {
-    fileChooser.addEventListener('change', onFileChooser);
+    fileChooser.addEventListener('change', onFileChooserChange);
   }
 
-  function onFileChooser() {
+  function onFileChooserChange() {
     var file = fileChooser.files[0];
     var fileName = file.name.toLowerCase();
 
@@ -108,9 +111,17 @@
     setScaleValue(scaleValue);
 
     document.addEventListener('keydown', onImageEditorEscPress);
+    imageUploadForm.addEventListener('submit', onSubmitForm);
+    userImageEditorClose.addEventListener('click', closeImageEditor);
+    userImageEditorClose.addEventListener('keydown', onUserImageEditorCloseKeydown);
+    effectLevelPin.addEventListener('mousedown', onLevelPinMouseDown);
+    choiceEffect.addEventListener('focus', onChoiceEffect, true);
+    scaleControlSmaller.addEventListener('click', onScaleControlSmallerClick);
+    scaleControlBigger.addEventListener('click', onScaleControlBiggerClick);
+    hashtagsInput.addEventListener('input', onHashtagsInput);
   }
 
-  scaleControlSmaller.addEventListener('click', function () {
+  function onScaleControlSmallerClick() {
     scaleValue -= SCALE_VALUE_STEP;
 
     if (scaleValue < MIN_SCALE_VALUE) {
@@ -118,9 +129,9 @@
     }
 
     setScaleValue(scaleValue);
-  });
+  }
 
-  scaleControlBigger.addEventListener('click', function () {
+  function onScaleControlBiggerClick() {
     scaleValue += SCALE_VALUE_STEP;
 
     if (scaleValue > MAX_SCALE_VALUE) {
@@ -128,16 +139,11 @@
     }
 
     setScaleValue(scaleValue);
-  });
+  }
 
-  effectLevelPin.addEventListener('mousedown', onMouseDownLevelPin);
-  choiceEffect.addEventListener('focus', onChoiceEffect, true);
-
-  userImageEditorClose.addEventListener('click', closeImageEditor);
-
-  userImageEditorClose.addEventListener('keydown', function (evt) {
+  function onUserImageEditorCloseKeydown(evt) {
     window.util.isEnterEvent(evt, closeImageEditor);
-  });
+  }
 
   function onImageEditorEscPress(evt) {
     if (document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
@@ -157,6 +163,14 @@
     hashtagsInput.value = '';
     descriptionInput.value = '';
     document.removeEventListener('keydown', onImageEditorEscPress);
+    imageUploadForm.removeEventListener('submit', onSubmitForm);
+    userImageEditorClose.removeEventListener('click', closeImageEditor);
+    userImageEditorClose.removeEventListener('keydown', onUserImageEditorCloseKeydown);
+    effectLevelPin.removeEventListener('mousedown', onLevelPinMouseDown);
+    choiceEffect.removeEventListener('focus', onChoiceEffect, true);
+    scaleControlSmaller.removeEventListener('click', onScaleControlSmallerClick);
+    scaleControlBigger.removeEventListener('click', onScaleControlBiggerClick);
+    hashtagsInput.removeEventListener('input', onHashtagsInput);
   }
 
   function setScaleValue(value) {
@@ -164,7 +178,7 @@
     imagePreviewContainer.style.transform = 'scale(' + value / 100 + ')';
   }
 
-  function onMouseDownLevelPin(downEvt) {
+  function onLevelPinMouseDown(downEvt) {
     downEvt.preventDefault();
 
     var effectLevelLineLeftCoordinate = getLeftCoordinate(effectLevelLine);
@@ -240,7 +254,7 @@
     effectLevelDepth.style.width = '';
   }
 
-  hashtagsInput.addEventListener('input', function () {
+  function onHashtagsInput() {
     var validationErrors = getValidationErrors(getHashtagsArray());
 
     if (validationErrors !== '') {
@@ -250,12 +264,12 @@
       hashtagsInput.style.borderColor = '';
       hashtagsInput.setCustomValidity('');
     }
-  });
+  }
 
-  imageUploadForm.addEventListener('submit', function (evt) {
+  function onSubmitForm(evt) {
     evt.preventDefault();
     window.backend.upload(new FormData(imageUploadForm), onLoad, onError);
-  });
+  }
 
   function getHashtagsArray() {
     var hashtags = hashtagsInput.value;
@@ -326,13 +340,10 @@
   }
 
   function showSuccess() {
-    var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
     var successWindow = successMessageTemplate.cloneNode(true);
-    var successButton = successWindow.querySelector('.success__button');
 
     mainBlock.appendChild(successWindow);
-    successWindow.addEventListener('click', closeSuccess);
-    successButton.addEventListener('click', closeSuccess);
+    document.addEventListener('click', closeSuccess);
     document.addEventListener('keydown', closeFromEsc);
 
     function closeFromEsc(evt) {
@@ -341,13 +352,12 @@
 
     function closeSuccess() {
       document.removeEventListener('keydown', closeFromEsc);
-      successWindow.removeEventListener('click', closeSuccess);
+      document.removeEventListener('click', closeSuccess);
       mainBlock.removeChild(successWindow);
     }
   }
 
   function onError(errorMessage) {
-    var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
     var errorWindow = errorMessageTemplate.cloneNode(true);
     var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
     var errorRetryButton = errorButtonsBlock.querySelector('.error__button:first-child');
@@ -365,6 +375,7 @@
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
     mainBlock.appendChild(errorWindow);
+    errorWindow.style.zIndex = UPPER_ZINDEX;
 
     errorWindow.addEventListener('click', closeErrorAndForm);
     errorAnotherSelectionButton.addEventListener('click', closeErrorAndForm);
@@ -376,8 +387,8 @@
 
     function closeError() {
       errorWindow.removeEventListener('click', closeErrorAndForm);
-      errorRetryButton.removeEventListener('click', closeError);
       errorAnotherSelectionButton.removeEventListener('click', closeErrorAndForm);
+      errorRetryButton.removeEventListener('click', closeError);
       document.removeEventListener('keydown', closeErrorFromEsc);
       mainBlock.removeChild(errorWindow);
     }
