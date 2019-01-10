@@ -359,10 +359,6 @@
     var errorRetryButton = errorButtonsBlock.querySelector('.error__button:first-child');
     var errorAnotherSelectionButton = errorButtonsBlock.querySelector('.error__button:last-child');
 
-    if (typeof (errorMessage) === 'object') {
-      errorMessage = FILE_TYPE_ERROR_MESSAGE;
-    }
-
     if (errorMessage === FILE_TYPE_ERROR_MESSAGE) {
       errorButtonsBlock.removeChild(errorRetryButton);
     } else {

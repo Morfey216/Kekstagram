@@ -40,7 +40,7 @@
       if (xhr.status === LOAD_OK) {
         onLoad();
       } else if (xhr.response !== null) {
-        onError(xhr.response);
+        onError(xhr.response[0].errorMessage);
       } else {
         onError('Ошибка: ' + xhr.status + ' ' + xhr.statusText);
       }
