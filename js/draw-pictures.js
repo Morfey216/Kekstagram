@@ -13,14 +13,11 @@
     newPicture.querySelector('.picture__comments').textContent = picture.comments.length;
     newPicture.setAttribute('data-picture-position', indexPicture);
 
-    return newPicture;
+    fragment.appendChild(newPicture);
   }
 
   function drawPictures(picturesKit) {
-    for (var index = 0; index < picturesKit.length; index++) {
-      fragment.appendChild(renderPicture(picturesKit[index], index));
-    }
-
+    picturesKit.forEach(renderPicture);
     userPictureDialog.appendChild(fragment);
   }
 
