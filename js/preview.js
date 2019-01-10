@@ -57,12 +57,8 @@
         newCommentsLoadButton.classList.add('hidden');
       }
 
-      for (var indexComment = startIndexOfComment; indexComment < endIndexOfComment; indexComment++) {
-        commentFragment.appendChild(renderNewComment(window.usersPictures[numberPicture].comments[indexComment]));
-      }
-
+      window.usersPictures[numberPicture].comments.slice(startIndexOfComment, endIndexOfComment).forEach(renderNewComment);
       userBigPictureDialog.querySelector('.social__comment-count').firstChild.textContent = endIndexOfComment + ' из ';
-
       startIndexOfComment = endIndexOfComment;
       socialComments.appendChild(commentFragment);
 
@@ -72,7 +68,7 @@
         newComment.appendChild(getImg());
         newComment.appendChild(getParagraph());
 
-        return newComment;
+        commentFragment.appendChild(newComment);
 
         function getImg() {
           var img = document.createElement('img');
