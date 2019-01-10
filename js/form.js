@@ -257,13 +257,9 @@
   function onHashtagsInput() {
     var validationErrors = getValidationErrors(getHashtagsArray());
 
-    if (validationErrors !== '') {
-      hashtagsInput.style.borderColor = 'red';
-      hashtagsInput.setCustomValidity(validationErrors);
-    } else {
-      hashtagsInput.style.borderColor = '';
-      hashtagsInput.setCustomValidity('');
-    }
+    hashtagsInput.style.borderColor = validationErrors ? 'red' : '';
+    hashtagsInput.setCustomValidity(validationErrors);
+
   }
 
   function onSubmitForm(evt) {
