@@ -32,7 +32,7 @@
   }
 
   function upload(data, onLoad, onError) {
-    var URL = 'https://js.dump.academy/kekstagram1';
+    var URL = 'https://js.dump.academy/kekstagram';
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 

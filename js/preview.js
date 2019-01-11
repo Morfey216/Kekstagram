@@ -11,13 +11,13 @@
     allSmallPictures.forEach(initSmallPictures);
 
     function initSmallPictures(smallPicture) {
-      smallPicture.addEventListener('click', drawCurrentBigPicture);
+      smallPicture.addEventListener('click', onShowCurrentPicture);
 
       smallPicture.addEventListener('keydown', function (evt) {
-        window.util.isEnterEvent(evt, drawCurrentBigPicture);
+        window.util.isEnterEvent(evt, onShowCurrentPicture);
       });
 
-      function drawCurrentBigPicture(evt) {
+      function onShowCurrentPicture(evt) {
         drawBigPicture(evt.currentTarget.getAttribute('data-picture-position'));
       }
     }
@@ -31,7 +31,7 @@
 
     renderGeneralInformation();
     clearComments();
-    renderNewComments();
+    onGetNewComments();
     showBigPicture();
 
 
@@ -48,7 +48,7 @@
       }
     }
 
-    function renderNewComments() {
+    function onGetNewComments() {
       var commentFragment = document.createDocumentFragment();
       var endIndexOfComment = startIndexOfComment + COMMENTS_INTERVAL;
 
@@ -96,26 +96,23 @@
       bodyBlock.classList.add('modal-open');
       userBigPictureDialog.classList.remove('hidden');
       document.addEventListener('keydown', onBigPictureEscPress);
-      newCommentsLoadButton.addEventListener('click', renderNewComments);
-
-      userBigPictureClose.addEventListener('click', function () {
-        closeBigPicture();
-      });
+      newCommentsLoadButton.addEventListener('click', onGetNewComments);
+      userBigPictureClose.addEventListener('click', onCloseBigPicture);
 
       userBigPictureClose.addEventListener('keydown', function (evt) {
-        window.util.isEnterEvent(evt, closeBigPicture);
+        window.util.isEnterEvent(evt, onCloseBigPicture);
       });
 
       function onBigPictureEscPress(evt) {
-        window.util.isEscEvent(evt, closeBigPicture);
+        window.util.isEscEvent(evt, onCloseBigPicture);
       }
 
-      function closeBigPicture() {
+      function onCloseBigPicture() {
         newCommentsLoadButton.classList.remove('hidden');
         bodyBlock.classList.remove('modal-open');
         userBigPictureDialog.classList.add('hidden');
         document.removeEventListener('keydown', onBigPictureEscPress);
-        newCommentsLoadButton.removeEventListener('click', renderNewComments);
+        newCommentsLoadButton.removeEventListener('click', onGetNewComments);
       }
     }
   }

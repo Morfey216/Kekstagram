@@ -96,7 +96,7 @@
 
       reader.addEventListener('load', function () {
         imagePreview.src = reader.result;
-        showImageEditor();
+        onFileLoad();
       });
 
       reader.readAsDataURL(file);
@@ -105,14 +105,14 @@
     }
   }
 
-  function showImageEditor() {
+  function onFileLoad() {
     userImageEditor.classList.remove('hidden');
     effectLevel.classList.add('img-filters--inactive');
     setScaleValue(scaleValue);
 
     document.addEventListener('keydown', onImageEditorEscPress);
     imageUploadForm.addEventListener('submit', onSubmitForm);
-    userImageEditorClose.addEventListener('click', closeImageEditor);
+    userImageEditorClose.addEventListener('click', onCloseForm);
     userImageEditorClose.addEventListener('keydown', onUserImageEditorCloseKeydown);
     effectLevelPin.addEventListener('mousedown', onLevelPinMouseDown);
     choiceEffect.addEventListener('focus', onChoiceEffect, true);
@@ -142,16 +142,16 @@
   }
 
   function onUserImageEditorCloseKeydown(evt) {
-    window.util.isEnterEvent(evt, closeImageEditor);
+    window.util.isEnterEvent(evt, onCloseForm);
   }
 
   function onImageEditorEscPress(evt) {
     if (document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
-      window.util.isEscEvent(evt, closeImageEditor);
+      window.util.isEscEvent(evt, onCloseForm);
     }
   }
 
-  function closeImageEditor() {
+  function onCloseForm() {
     userImageEditor.classList.add('hidden');
     fileChooser.value = '';
     imagePreview.src = '';
@@ -164,7 +164,7 @@
     descriptionInput.value = '';
     document.removeEventListener('keydown', onImageEditorEscPress);
     imageUploadForm.removeEventListener('submit', onSubmitForm);
-    userImageEditorClose.removeEventListener('click', closeImageEditor);
+    userImageEditorClose.removeEventListener('click', onCloseForm);
     userImageEditorClose.removeEventListener('keydown', onUserImageEditorCloseKeydown);
     effectLevelPin.removeEventListener('mousedown', onLevelPinMouseDown);
     choiceEffect.removeEventListener('focus', onChoiceEffect, true);
@@ -331,7 +331,7 @@
   }
 
   function onLoad() {
-    closeImageEditor();
+    onCloseForm();
     showSuccess();
   }
 
@@ -339,16 +339,16 @@
     var successWindow = successMessageTemplate.cloneNode(true);
 
     mainBlock.appendChild(successWindow);
-    document.addEventListener('click', closeSuccess);
-    document.addEventListener('keydown', closeFromEsc);
+    document.addEventListener('click', onCloseSuccess);
+    document.addEventListener('keydown', onCloseFromEscKeydown);
 
-    function closeFromEsc(evt) {
-      window.util.isEscEvent(evt, closeSuccess);
+    function onCloseFromEscKeydown(evt) {
+      window.util.isEscEvent(evt, onCloseSuccess);
     }
 
-    function closeSuccess() {
-      document.removeEventListener('keydown', closeFromEsc);
-      document.removeEventListener('click', closeSuccess);
+    function onCloseSuccess() {
+      document.removeEventListener('keydown', onCloseFromEscKeydown);
+      document.removeEventListener('click', onCloseSuccess);
       mainBlock.removeChild(successWindow);
     }
   }
@@ -361,30 +361,30 @@
     if (errorMessage === FILE_TYPE_ERROR_MESSAGE) {
       errorButtonsBlock.removeChild(errorRetryButton);
     } else {
-      errorRetryButton.addEventListener('click', closeError);
+      errorRetryButton.addEventListener('click', onCloseError);
     }
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
     mainBlock.appendChild(errorWindow);
     errorWindow.style.zIndex = UPPER_Z_INDEX;
 
-    document.addEventListener('click', closeErrorAndForm);
-    document.addEventListener('keydown', closeErrorFromEsc);
+    document.addEventListener('click', onCloseErrorWindow);
+    document.addEventListener('keydown', onCloseErrorFromEsc);
 
-    function closeErrorFromEsc(evt) {
-      window.util.isEscEvent(evt, closeErrorAndForm);
+    function onCloseErrorFromEsc(evt) {
+      window.util.isEscEvent(evt, onCloseErrorWindow);
     }
 
-    function closeError() {
-      document.removeEventListener('click', closeErrorAndForm);
-      errorRetryButton.removeEventListener('click', closeError);
-      document.removeEventListener('keydown', closeErrorFromEsc);
+    function onCloseError() {
+      document.removeEventListener('click', onCloseErrorWindow);
+      errorRetryButton.removeEventListener('click', onCloseError);
+      document.removeEventListener('keydown', onCloseErrorFromEsc);
       mainBlock.removeChild(errorWindow);
     }
 
-    function closeErrorAndForm() {
-      closeError();
-      closeImageEditor();
+    function onCloseErrorWindow() {
+      onCloseError();
+      onCloseForm();
     }
   }
 
