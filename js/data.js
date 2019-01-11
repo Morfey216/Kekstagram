@@ -20,7 +20,7 @@
     errorButtonsBlock.removeChild(errorButtonsBlock.querySelector('.error__button:last-child'));
     mainBlock.appendChild(errorWindow);
 
-    errorWindow.addEventListener('click', onCloseError);
+    document.addEventListener('click', onCloseError);
     document.addEventListener('keydown', onCloseFromEsc);
 
     function onCloseFromEsc(evt) {
@@ -28,7 +28,7 @@
     }
 
     function onCloseError() {
-      errorWindow.removeEventListener('click', onCloseError);
+      document.removeEventListener('click', onCloseError);
       document.removeEventListener('keydown', onCloseFromEsc);
       mainBlock.removeChild(errorWindow);
     }

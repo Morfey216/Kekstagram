@@ -9,7 +9,7 @@
   var MIN_SCALE_VALUE = 25;
   var MAX_SCALE_VALUE = 100;
   var SCALE_VALUE_STEP = 25;
-  var UPPER_ZINDEX = 10;
+  var UPPER_Z_INDEX = 10;
   var EFFECTS = {
     chrome: {
       effectName: 'chrome',
@@ -357,7 +357,6 @@
     var errorWindow = errorMessageTemplate.cloneNode(true);
     var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
     var errorRetryButton = errorButtonsBlock.querySelector('.error__button:first-child');
-    var errorAnotherSelectionButton = errorButtonsBlock.querySelector('.error__button:last-child');
 
     if (errorMessage === FILE_TYPE_ERROR_MESSAGE) {
       errorButtonsBlock.removeChild(errorRetryButton);
@@ -367,10 +366,9 @@
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
     mainBlock.appendChild(errorWindow);
-    errorWindow.style.zIndex = UPPER_ZINDEX;
+    errorWindow.style.zIndex = UPPER_Z_INDEX;
 
-    errorWindow.addEventListener('click', closeErrorAndForm);
-    errorAnotherSelectionButton.addEventListener('click', closeErrorAndForm);
+    document.addEventListener('click', closeErrorAndForm);
     document.addEventListener('keydown', closeErrorFromEsc);
 
     function closeErrorFromEsc(evt) {
@@ -378,8 +376,7 @@
     }
 
     function closeError() {
-      errorWindow.removeEventListener('click', closeErrorAndForm);
-      errorAnotherSelectionButton.removeEventListener('click', closeErrorAndForm);
+      document.removeEventListener('click', closeErrorAndForm);
       errorRetryButton.removeEventListener('click', closeError);
       document.removeEventListener('keydown', closeErrorFromEsc);
       mainBlock.removeChild(errorWindow);

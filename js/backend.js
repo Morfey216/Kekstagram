@@ -32,14 +32,14 @@
   }
 
   function upload(data, onLoad, onError) {
-    var URL = 'https://js.dump.academy/kekstagram';
+    var URL = 'https://js.dump.academy/kekstagram1';
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
       if (xhr.status === LOAD_OK) {
         onLoad();
-      } else if (xhr.response !== null) {
+      } else if (xhr.response) {
         onError(xhr.response[0].errorMessage);
       } else {
         onError('Ошибка: ' + xhr.status + ' ' + xhr.statusText);
