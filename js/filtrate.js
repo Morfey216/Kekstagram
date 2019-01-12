@@ -16,11 +16,11 @@
 
     filterButtons.forEach(initFilterButton);
 
-    function initFilterButton(currentFilterButton) {
-      currentFilterButton.addEventListener('click', onFilterSelect);
+    function initFilterButton(filterButton) {
+      filterButton.addEventListener('click', onFilterButtonClick);
 
-      function onFilterSelect() {
-        switch (currentFilterButton.id) {
+      function onFilterButtonClick() {
+        switch (filterButton.id) {
           case 'filter-popular':
             window.usersPictures = defaultPicturesKit;
             break;
@@ -32,7 +32,7 @@
             break;
         }
         clearActiveFilterButton();
-        currentFilterButton.classList.add('img-filters__button--active');
+        filterButton.classList.add('img-filters__button--active');
         window.debounce(drawFilteredPictures);
       }
     }

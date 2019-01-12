@@ -11,13 +11,16 @@
     allSmallPictures.forEach(initSmallPictures);
 
     function initSmallPictures(smallPicture) {
-      smallPicture.addEventListener('click', onShowCurrentPicture);
-
-      smallPicture.addEventListener('keydown', function (evt) {
-        window.util.isEnterEvent(evt, onShowCurrentPicture);
+      smallPicture.addEventListener('click', function (evt) {
+        showCurrentPicture(evt);
       });
 
-      function onShowCurrentPicture(evt) {
+      smallPicture.addEventListener('keydown', function (evt) {
+        evt.preventDefault();
+        window.util.isEnterEvent(evt, showCurrentPicture);
+      });
+
+      function showCurrentPicture(evt) {
         drawBigPicture(evt.currentTarget.getAttribute('data-picture-position'));
       }
     }
@@ -26,12 +29,12 @@
   function drawBigPicture(numberPicture) {
     var userBigPictureDialog = document.querySelector('.big-picture');
     var socialComments = userBigPictureDialog.querySelector('.social__comments');
-    var newCommentsLoadButton = userBigPictureDialog.querySelector('.comments-loader');
+    var commentsLoader = userBigPictureDialog.querySelector('.comments-loader');
     var startIndexOfComment = 0;
 
     renderGeneralInformation();
     clearComments();
-    onGetNewComments();
+    getNewComments();
     showBigPicture();
 
 
@@ -48,13 +51,13 @@
       }
     }
 
-    function onGetNewComments() {
+    function getNewComments() {
       var commentFragment = document.createDocumentFragment();
       var endIndexOfComment = startIndexOfComment + COMMENTS_INTERVAL;
 
       if (endIndexOfComment >= window.usersPictures[numberPicture].comments.length) {
         endIndexOfComment = window.usersPictures[numberPicture].comments.length;
-        newCommentsLoadButton.classList.add('hidden');
+        commentsLoader.classList.add('hidden');
       }
 
       window.usersPictures[numberPicture].comments.slice(startIndexOfComment, endIndexOfComment).forEach(renderNewComment);
@@ -91,28 +94,41 @@
 
     function showBigPicture() {
       var bodyBlock = document.querySelector('body');
-      var userBigPictureClose = userBigPictureDialog.querySelector('.big-picture__cancel');
+      var closeButton = userBigPictureDialog.querySelector('.big-picture__cancel');
 
       bodyBlock.classList.add('modal-open');
       userBigPictureDialog.classList.remove('hidden');
-      document.addEventListener('keydown', onBigPictureEscPress);
-      newCommentsLoadButton.addEventListener('click', onGetNewComments);
-      userBigPictureClose.addEventListener('click', onCloseBigPicture);
 
-      userBigPictureClose.addEventListener('keydown', function (evt) {
-        window.util.isEnterEvent(evt, onCloseBigPicture);
-      });
+      document.addEventListener('keydown', onKeydown);
+      closeButton.addEventListener('click', onCloseButtonClick);
+      closeButton.addEventListener('keydown', onCloseButtonKeydown);
+      commentsLoader.addEventListener('click', onCommentsLoaderClick);
 
-      function onBigPictureEscPress(evt) {
-        window.util.isEscEvent(evt, onCloseBigPicture);
+      function onKeydown(evt) {
+        window.util.isEscEvent(evt, closeBigPicture);
       }
 
-      function onCloseBigPicture() {
-        newCommentsLoadButton.classList.remove('hidden');
+      function onCloseButtonClick() {
+        closeBigPicture();
+      }
+
+      function onCloseButtonKeydown(evt) {
+        window.util.isEnterEvent(evt, closeBigPicture);
+      }
+
+      function onCommentsLoaderClick() {
+        getNewComments();
+      }
+
+      function closeBigPicture() {
+        commentsLoader.classList.remove('hidden');
         bodyBlock.classList.remove('modal-open');
         userBigPictureDialog.classList.add('hidden');
-        document.removeEventListener('keydown', onBigPictureEscPress);
-        newCommentsLoadButton.removeEventListener('click', onGetNewComments);
+
+        document.removeEventListener('keydown', onKeydown);
+        closeButton.removeEventListener('click', onCloseButtonClick);
+        closeButton.removeEventListener('keydown', onCloseButtonKeydown);
+        commentsLoader.removeEventListener('click', onCommentsLoaderClick);
       }
     }
   }

@@ -56,10 +56,10 @@
   };
 
   var mainBlock = document.querySelector('main');
-  var imageUploadForm = document.querySelector('.img-upload__form');
-  var fileChooser = imageUploadForm.querySelector('#upload-file');
-  var userImageEditor = imageUploadForm.querySelector('.img-upload__overlay');
-  var userImageEditorClose = userImageEditor.querySelector('.img-upload__cancel');
+  var form = document.querySelector('.img-upload__form');
+  var fileChooser = form.querySelector('#upload-file');
+  var userImageEditor = form.querySelector('.img-upload__overlay');
+  var closeButton = userImageEditor.querySelector('.img-upload__cancel');
   var imagePreviewContainer = userImageEditor.querySelector('.img-upload__preview');
   var imagePreview = userImageEditor.querySelector('.img-upload__preview img');
   var hashtagsInput = userImageEditor.querySelector('.text__hashtags');
@@ -96,7 +96,7 @@
 
       reader.addEventListener('load', function () {
         imagePreview.src = reader.result;
-        onFileLoad();
+        showForm();
       });
 
       reader.readAsDataURL(file);
@@ -105,20 +105,54 @@
     }
   }
 
-  function onFileLoad() {
+  function showForm() {
     userImageEditor.classList.remove('hidden');
     effectLevel.classList.add('img-filters--inactive');
     setScaleValue(scaleValue);
+    setFormListeners();
+  }
 
-    document.addEventListener('keydown', onImageEditorEscPress);
-    imageUploadForm.addEventListener('submit', onSubmitForm);
-    userImageEditorClose.addEventListener('click', onCloseForm);
-    userImageEditorClose.addEventListener('keydown', onUserImageEditorCloseKeydown);
+  function setFormListeners() {
+    document.addEventListener('keydown', onKeydown);
+    form.addEventListener('submit', onFormSubmit);
+    closeButton.addEventListener('click', onCloseButtonClick);
+    closeButton.addEventListener('keydown', onCloseButtonKeydown);
     effectLevelPin.addEventListener('mousedown', onLevelPinMouseDown);
-    choiceEffect.addEventListener('focus', onChoiceEffect, true);
+    choiceEffect.addEventListener('focus', onEffectFocus, true);
     scaleControlSmaller.addEventListener('click', onScaleControlSmallerClick);
     scaleControlBigger.addEventListener('click', onScaleControlBiggerClick);
-    hashtagsInput.addEventListener('input', onHashtagsInput);
+    hashtagsInput.addEventListener('input', onHashtagsInputChange);
+  }
+
+  function closeForm() {
+    userImageEditor.classList.add('hidden');
+    fileChooser.value = '';
+    imagePreview.src = '';
+    clearEffect();
+    imagePreviewContainer.style.transform = '';
+    scaleValue = MAX_SCALE_VALUE;
+    hashtagsInput.setCustomValidity('');
+    hashtagsInput.style.borderColor = '';
+    hashtagsInput.value = '';
+    descriptionInput.value = '';
+    removeFormListeners();
+  }
+
+  function removeFormListeners() {
+    document.removeEventListener('keydown', onKeydown);
+    form.removeEventListener('submit', onFormSubmit);
+    closeButton.removeEventListener('click', onCloseButtonClick);
+    closeButton.removeEventListener('keydown', onCloseButtonKeydown);
+    effectLevelPin.removeEventListener('mousedown', onLevelPinMouseDown);
+    choiceEffect.removeEventListener('focus', onEffectFocus, true);
+    scaleControlSmaller.removeEventListener('click', onScaleControlSmallerClick);
+    scaleControlBigger.removeEventListener('click', onScaleControlBiggerClick);
+    hashtagsInput.removeEventListener('input', onHashtagsInputChange);
+  }
+
+  function onFormSubmit(evt) {
+    evt.preventDefault();
+    window.backend.upload(new FormData(form), onLoad, onError);
   }
 
   function onScaleControlSmallerClick() {
@@ -141,36 +175,18 @@
     setScaleValue(scaleValue);
   }
 
-  function onUserImageEditorCloseKeydown(evt) {
-    window.util.isEnterEvent(evt, onCloseForm);
+  function onCloseButtonClick() {
+    closeForm();
   }
 
-  function onImageEditorEscPress(evt) {
+  function onCloseButtonKeydown(evt) {
+    window.util.isEnterEvent(evt, closeForm);
+  }
+
+  function onKeydown(evt) {
     if (document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
-      window.util.isEscEvent(evt, onCloseForm);
+      window.util.isEscEvent(evt, closeForm);
     }
-  }
-
-  function onCloseForm() {
-    userImageEditor.classList.add('hidden');
-    fileChooser.value = '';
-    imagePreview.src = '';
-    clearEffect();
-    imagePreviewContainer.style.transform = '';
-    scaleValue = MAX_SCALE_VALUE;
-    hashtagsInput.setCustomValidity('');
-    hashtagsInput.style.borderColor = '';
-    hashtagsInput.value = '';
-    descriptionInput.value = '';
-    document.removeEventListener('keydown', onImageEditorEscPress);
-    imageUploadForm.removeEventListener('submit', onSubmitForm);
-    userImageEditorClose.removeEventListener('click', onCloseForm);
-    userImageEditorClose.removeEventListener('keydown', onUserImageEditorCloseKeydown);
-    effectLevelPin.removeEventListener('mousedown', onLevelPinMouseDown);
-    choiceEffect.removeEventListener('focus', onChoiceEffect, true);
-    scaleControlSmaller.removeEventListener('click', onScaleControlSmallerClick);
-    scaleControlBigger.removeEventListener('click', onScaleControlBiggerClick);
-    hashtagsInput.removeEventListener('input', onHashtagsInput);
   }
 
   function setScaleValue(value) {
@@ -184,11 +200,15 @@
     var effectLevelLineLeftCoordinate = getLeftCoordinate(effectLevelLine);
     var effectRange = currentEffectObj.maxLevelEffect - currentEffectObj.minLevelEffect;
 
-    document.addEventListener('mousemove', onPinMove);
+    document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
 
-    function onPinMove(moveEvt) {
-      var newLeft = moveEvt.clientX - effectLevelLineLeftCoordinate;
+    function onMouseMove(moveEvt) {
+      setEffectOptions(moveEvt);
+    }
+
+    function setEffectOptions(effectEvt) {
+      var newLeft = effectEvt.clientX - effectLevelLineLeftCoordinate;
       var maxLeft = effectLevelLine.offsetWidth;
 
       if (newLeft < 0) {
@@ -210,8 +230,8 @@
     }
 
     function onMouseUp(upEvt) {
-      onPinMove(upEvt);
-      document.removeEventListener('mousemove', onPinMove);
+      setEffectOptions(upEvt);
+      document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     }
   }
@@ -225,7 +245,7 @@
     return box.left + pageXOffset;
   }
 
-  function onChoiceEffect(choiceEvt) {
+  function onEffectFocus(choiceEvt) {
     clearEffect();
     setEffect(choiceEvt.target.value);
   }
@@ -254,17 +274,12 @@
     effectLevelDepth.style.width = '';
   }
 
-  function onHashtagsInput() {
+  function onHashtagsInputChange() {
     var validationErrors = getValidationErrors(getHashtagsArray());
 
     hashtagsInput.style.borderColor = validationErrors ? 'red' : '';
     hashtagsInput.setCustomValidity(validationErrors);
 
-  }
-
-  function onSubmitForm(evt) {
-    evt.preventDefault();
-    window.backend.upload(new FormData(imageUploadForm), onLoad, onError);
   }
 
   function getHashtagsArray() {
@@ -331,7 +346,7 @@
   }
 
   function onLoad() {
-    onCloseForm();
+    closeForm();
     showSuccess();
   }
 
@@ -339,16 +354,21 @@
     var successWindow = successMessageTemplate.cloneNode(true);
 
     mainBlock.appendChild(successWindow);
-    document.addEventListener('click', onCloseSuccess);
-    document.addEventListener('keydown', onCloseFromEscKeydown);
+    successWindow.addEventListener('click', onSuccessWindowClick);
+    document.addEventListener('keydown', onSuccessKeydown);
 
-    function onCloseFromEscKeydown(evt) {
-      window.util.isEscEvent(evt, onCloseSuccess);
+    function onSuccessKeydown(evt) {
+      evt.preventDefault();
+      window.util.isEscEvent(evt, closeSuccess);
     }
 
-    function onCloseSuccess() {
-      document.removeEventListener('keydown', onCloseFromEscKeydown);
-      document.removeEventListener('click', onCloseSuccess);
+    function onSuccessWindowClick() {
+      closeSuccess();
+    }
+
+    function closeSuccess() {
+      document.removeEventListener('keydown', onSuccessKeydown);
+      successWindow.removeEventListener('click', onSuccessWindowClick);
       mainBlock.removeChild(successWindow);
     }
   }
@@ -356,35 +376,44 @@
   function onError(errorMessage) {
     var errorWindow = errorMessageTemplate.cloneNode(true);
     var errorButtonsBlock = errorWindow.querySelector('.error__buttons');
-    var errorRetryButton = errorButtonsBlock.querySelector('.error__button:first-child');
+    var retryButton = errorButtonsBlock.querySelector('.error__button:first-child');
 
     if (errorMessage === FILE_TYPE_ERROR_MESSAGE) {
-      errorButtonsBlock.removeChild(errorRetryButton);
+      errorButtonsBlock.removeChild(retryButton);
     } else {
-      errorRetryButton.addEventListener('click', onCloseError);
+      retryButton.addEventListener('click', onRetryButtonClick);
     }
 
     errorWindow.querySelector('.error__title').textContent = errorMessage;
     mainBlock.appendChild(errorWindow);
     errorWindow.style.zIndex = UPPER_Z_INDEX;
 
-    document.addEventListener('click', onCloseErrorWindow);
-    document.addEventListener('keydown', onCloseErrorFromEsc);
+    errorWindow.addEventListener('click', onErrorWindowClick);
+    document.addEventListener('keydown', onErrorKeydown);
 
-    function onCloseErrorFromEsc(evt) {
-      window.util.isEscEvent(evt, onCloseErrorWindow);
+    function onErrorKeydown(evt) {
+      evt.preventDefault();
+      window.util.isEscEvent(evt, closeErrorWindowAndForm);
     }
 
-    function onCloseError() {
-      document.removeEventListener('click', onCloseErrorWindow);
-      errorRetryButton.removeEventListener('click', onCloseError);
-      document.removeEventListener('keydown', onCloseErrorFromEsc);
+    function onErrorWindowClick() {
+      closeErrorWindowAndForm();
+    }
+
+    function onRetryButtonClick() {
+      closeError();
+    }
+
+    function closeError() {
+      errorWindow.removeEventListener('click', onErrorWindowClick);
+      retryButton.removeEventListener('click', onRetryButtonClick);
+      document.removeEventListener('keydown', onErrorKeydown);
       mainBlock.removeChild(errorWindow);
     }
 
-    function onCloseErrorWindow() {
-      onCloseError();
-      onCloseForm();
+    function closeErrorWindowAndForm() {
+      closeError();
+      closeForm();
     }
   }
 

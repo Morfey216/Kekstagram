@@ -20,16 +20,20 @@
     errorButtonsBlock.removeChild(errorButtonsBlock.querySelector('.error__button:last-child'));
     mainBlock.appendChild(errorWindow);
 
-    document.addEventListener('click', onCloseError);
-    document.addEventListener('keydown', onCloseFromEsc);
+    errorWindow.addEventListener('click', onErrorWindowClick);
+    document.addEventListener('keydown', onKeydown);
 
-    function onCloseFromEsc(evt) {
-      window.util.isEscEvent(evt, onCloseError);
+    function onErrorWindowClick() {
+      closeError();
     }
 
-    function onCloseError() {
-      document.removeEventListener('click', onCloseError);
-      document.removeEventListener('keydown', onCloseFromEsc);
+    function onKeydown(evt) {
+      window.util.isEscEvent(evt, closeError);
+    }
+
+    function closeError() {
+      errorWindow.removeEventListener('click', onErrorWindowClick);
+      document.removeEventListener('keydown', onKeydown);
       mainBlock.removeChild(errorWindow);
     }
   }
